@@ -7,6 +7,7 @@
   overflow: hidden;
 }
 
+/*Punto 1 y 2 sin animacion*/
 .tarjeta-experiencia__imagen { margin: 0; }
 .tarjeta-experiencia__imagen svg { display: block; width: 100%; height: auto; }
 .tarjeta-experiencia__imagen figcaption { padding: 10px 24px; color: var(--color-secundario); font-size: .75rem; }
@@ -50,7 +51,7 @@
 }
 
 /* Punto 4: segundo disparador, :focus, accesible con Tab.
-   El contorno global permanece visible; Enter o Espacio abre el detalle. */
+   El contorno global permanece visible Enter o Espacio abre el detalle. */
 .tarjeta-experiencia__indicador {
   display: inline-block;
   margin-left: 6px;
@@ -61,12 +62,6 @@
   transform: translateX(8px);
 }
 
-/* Punto 7: el foco también se muestra al hacer clic, sin depender de :focus-visible. */
-.tarjeta-experiencia summary:focus {
-  outline: 3px solid var(--color-acento);
-  outline-offset: 5px;
-  border-radius: 4px;
-}
 
 /* Punto 5: entrada de tres pasos. El estado final se conserva con both
    (incluye forwards); el transform final no desplaza el contenido. */
@@ -87,7 +82,37 @@
   100% { opacity: 1; transform: none; }
 }
 
-/* Punto 6: conserva el contenido y la interacción sin movimiento. */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Punto 7: el foco también se muestra al hacer clic, sin depender de :focus-visible. 
+.tarjeta-experiencia summary:focus {
+  outline: 3px solid var(--color-acento);
+  outline-offset: 5px;
+  border-radius: 4px;
+}
+
+Punto 6: conserva el contenido y la interacción sin movimiento. 
 @media (prefers-reduced-motion: reduce) {
   .tarjeta-experiencia,
   .tarjeta-experiencia__imagen svg,
@@ -105,3 +130,7 @@
     animation: none;
   }
 }
+
+
+
+*/
