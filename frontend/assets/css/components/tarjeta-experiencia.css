@@ -1,4 +1,4 @@
-/* Base visual de la tarjeta. Práctica 1, puntos 1 y 2: sin movimiento. */
+/* Base visual de la tarjeta integrada en el catálogo. */
 .tarjeta-experiencia {
   max-width: 440px;
   background: var(--color-superficie);
@@ -20,3 +20,88 @@
 .tarjeta-experiencia__detalle p { margin: 16px 0 0; }
 .tarjeta-experiencia__nota { margin-top: 24px; color: var(--color-secundario); font-size: .75rem; }
 .tarjeta-experiencia__nota p { margin: 0; }
+
+/* Punto 3: transformación 2D. Punto 4: transición disparada por :hover.
+   Solo se animan transform y opacity, sin modificar la maquetación. */
+.tarjeta-experiencia {
+  transition: transform 240ms ease;
+}
+
+@media (hover: hover) {
+  .tarjeta-experiencia:hover {
+    transform: translateY(-6px);
+  }
+}
+
+/* Punto 3: la perspectiva pertenece al contenedor de la ilustración.
+   El giro moderado mantiene visible su cara frontal y su descripción. */
+.tarjeta-experiencia__imagen {
+  perspective: 900px;
+}
+
+.tarjeta-experiencia__imagen svg {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transition: transform 600ms ease;
+}
+
+.tarjeta-experiencia:has(.tarjeta-experiencia__detalle[open]) .tarjeta-experiencia__imagen svg {
+  transform: rotateY(-16deg) scale(.96);
+}
+
+/* Punto 4: segundo disparador, :focus, accesible con Tab.
+   El contorno global permanece visible; Enter o Espacio abre el detalle. */
+.tarjeta-experiencia__indicador {
+  display: inline-block;
+  margin-left: 6px;
+  transition: transform 240ms ease;
+}
+
+.tarjeta-experiencia summary:focus .tarjeta-experiencia__indicador {
+  transform: translateX(8px);
+}
+
+/* Punto 7: el foco también se muestra al hacer clic, sin depender de :focus-visible. */
+.tarjeta-experiencia summary:focus {
+  outline: 3px solid var(--color-acento);
+  outline-offset: 5px;
+  border-radius: 4px;
+}
+
+/* Punto 5: entrada de tres pasos. El estado final se conserva con both
+   (incluye forwards); el transform final no desplaza el contenido. */
+.tarjeta-experiencia__contenido {
+  animation: entrada-experiencia 700ms ease-out;
+  animation-fill-mode: both;
+}
+
+/* Si se llega con Tab durante la entrada, mostrar de inmediato el control
+   y su contorno; no dejar el foco dentro de un contenido transparente. */
+.tarjeta-experiencia__contenido:focus-within {
+  animation: none;
+}
+
+@keyframes entrada-experiencia {
+  0% { opacity: 0; transform: translateY(16px); }
+  60% { opacity: .8; transform: translateY(4px); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* Punto 6: conserva el contenido y la interacción sin movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta-experiencia,
+  .tarjeta-experiencia__imagen svg,
+  .tarjeta-experiencia__indicador {
+    transition: none;
+  }
+
+  .tarjeta-experiencia:hover,
+  .tarjeta-experiencia:has(.tarjeta-experiencia__detalle[open]) .tarjeta-experiencia__imagen svg,
+  .tarjeta-experiencia summary:focus .tarjeta-experiencia__indicador {
+    transform: none;
+  }
+
+  .tarjeta-experiencia__contenido {
+    animation: none;
+  }
+}
