@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catálogo de experiencias | BajaTrip</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components/tarjeta-experiencia.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../index.html" aria-label="BajaTrip, inicio">BajaTrip<span>BAJA CALIFORNIA SUR</span></a>
+    <nav aria-label="Navegación principal">
+      <a href="../index.html">Inicio</a>
+      <a href="catalogo.html" aria-current="page">Catálogo</a>
+    </nav>
+  </header>
+  <main class="container">
+    <header class="intro">
+      <p class="eyebrow">Descubre tu siguiente destino</p>
+      <h1>Catálogo de experiencias</h1>
+      <p>Acércate al mar y descubre otra forma de disfrutar Baja California Sur.</p>
+    </header>
+    <section class="experiencias" aria-labelledby="titulo-experiencias">
+      <h2 id="titulo-experiencias">Una mirada a La Paz</h2>
+      <!-- Componente de la práctica 1: elección e integración (1) y marcado semántico (2). -->
+      <article class="tarjeta-experiencia" aria-labelledby="titulo-experiencia">
+        <figure class="tarjeta-experiencia__imagen">
+          <svg viewBox="0 0 640 360" role="img" aria-labelledby="titulo-ilustracion" xmlns="http://www.w3.org/2000/svg">
+            <title id="titulo-ilustracion">Ilustración de una bahía con mar turquesa, montañas y una playa</title>
+            <path fill="#d9eef0" d="M0 0h640v360H0z"/>
+            <circle fill="#f5cb79" cx="492" cy="79" r="35"/>
+            <path fill="#b98767" d="m0 203 103-102 103 69 86-45 119 94 129-87 100 65v163H0Z"/>
+            <path fill="#277e87" d="M0 217q170-31 320 5t320-5v143H0Z"/>
+            <path fill="#65b9b7" d="M0 267q166-42 340 0t300-15v108H0Z"/>
+            <path fill="#f2dfb9" d="M0 305q129-15 235 31t405-18v42H0Z"/>
+            <path fill="none" stroke="#e9f5ed" stroke-width="3" stroke-linecap="round" d="M81 254h83m91 39h104m107-43h70"/>
+          </svg>
+          <figcaption>El encuentro del mar y el desierto · Ilustración</figcaption>
+        </figure>
+        <div class="tarjeta-experiencia__contenido">
+          <header>
+            <p class="eyebrow">La Paz · Naturaleza</p>
+            <h3 id="titulo-experiencia">Un día junto al mar en La Paz</h3>
+          </header>
+          <p>Una experiencia para disfrutar del paisaje costero, caminar por la playa y conocer el entorno de la bahía.</p>
+          <dl class="tarjeta-experiencia__datos">
+            <div><dt>Municipio</dt><dd>La Paz</dd></div>
+            <div><dt>Categoría</dt><dd>Actividad al aire libre</dd></div>
+          </dl>
+          <details class="tarjeta-experiencia__detalle">
+            <summary>Conocer la experiencia</summary>
+            <p>Una salida que combina tiempo en la playa y una caminata para contemplar el paisaje. Lleva agua, protección solar y calzado cómodo.</p>
+            <p>El itinerario, el precio y la disponibilidad se mostrarán cuando el prestador publique el servicio.</p>
+          </details>
+          <footer class="tarjeta-experiencia__nota">
+            <p>Experiencia de ejemplo · Aún no disponible para reservar.</p>
+          </footer>
+        </div>
+      </article>
+    </section>
+  </main>
+  <footer class="site-footer"><p>BajaTrip · Descubre Baja California Sur</p></footer>
+</body>
+</html>

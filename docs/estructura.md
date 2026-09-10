@@ -1,6 +1,6 @@
 # Estructura inicial de BajaTrip
 
-Esta organización se basa en los puntos 2 a 5 de `Fundamentacion del Proyecto.pdf`. Los archivos de las pantallas, estilos y scripts están vacíos: todavía no hay implementación, dependencias ni configuración de ejecución. Los archivos `.gitkeep` permiten guardar carpetas vacías en Git.
+Esta organización se basa en los puntos 2 a 5 de `Fundamentacion del Proyecto.pdf`. Inicialmente se crearon archivos vacíos. Ahora el inicio, el catálogo y sus estilos contienen la base de una tarjeta de experiencia para los puntos 1 y 2 de la práctica 1; los demás archivos de implementación siguen vacíos. No hay dependencias ni configuración de ejecución. Los archivos `.gitkeep` permiten guardar carpetas vacías en Git.
 
 Se proponen HTML, CSS y JavaScript para organizar la parte del navegador. El lenguaje y el framework del servidor, la base de datos y los proveedores de captcha y notificaciones quedan por definir; el documento no los exige.
 

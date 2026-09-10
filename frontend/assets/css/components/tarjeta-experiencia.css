@@ -1,0 +1,22 @@
+/* Base visual de la tarjeta. Práctica 1, puntos 1 y 2: sin movimiento. */
+.tarjeta-experiencia {
+  max-width: 440px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.tarjeta-experiencia__imagen { margin: 0; }
+.tarjeta-experiencia__imagen svg { display: block; width: 100%; height: auto; }
+.tarjeta-experiencia__imagen figcaption { padding: 10px 24px; color: var(--color-secundario); font-size: .75rem; }
+.tarjeta-experiencia__contenido { padding: 16px 24px 24px; }
+.tarjeta-experiencia h3 { margin: 0 0 16px; font-size: 1.6rem; }
+.tarjeta-experiencia__datos { display: flex; flex-wrap: wrap; gap: 16px 32px; margin: 24px 0; }
+.tarjeta-experiencia dt { color: var(--color-secundario); font-size: .8rem; }
+.tarjeta-experiencia dd { margin: 0; font-weight: 600; }
+.tarjeta-experiencia__detalle { border-top: 1px solid var(--color-borde); padding-top: 16px; }
+.tarjeta-experiencia summary { padding: 6px 0; color: var(--color-acento); font-weight: 700; cursor: pointer; }
+.tarjeta-experiencia__detalle p { margin: 16px 0 0; }
+.tarjeta-experiencia__nota { margin-top: 24px; color: var(--color-secundario); font-size: .75rem; }
+.tarjeta-experiencia__nota p { margin: 0; }
