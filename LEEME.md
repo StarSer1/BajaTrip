@@ -12,4 +12,10 @@ Las transiciones usan [`transition`](https://developer.mozilla.org/en-US/docs/We
 
 La entrada dura 700ms y utiliza [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes) con tres pasos: 0%, 60% y 100%. [`animation-fill-mode: both`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-fill-mode) mantiene el estado final visible. Ambas características tienen soporte amplio. También lo tienen [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion), que desactiva el movimiento cuando el usuario lo solicita, y los selectores [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) y [`:focus-within`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-within), empleados para señalar el foco y evitar que la entrada oculte el control enfocado.
 
-Se animaron únicamente `transform` y [`opacity`](https://developer.mozilla.org/en-US/docs/Web/CSS/opacity), esta última también ampliamente disponible. Permiten mover visualmente el contenido y cambiar su transparencia sin recalcular su tamaño en cada 
+Se animaron únicamente `transform` y [`opacity`](https://developer.mozilla.org/en-US/docs/Web/CSS/opacity), esta última también ampliamente disponible. Permiten mover visualmente el contenido y cambiar su transparencia sin recalcular su tamaño en cada fotograma. Animar propiedades como la altura o los márgenes puede requerir recalcular la distribución de los elementos, por lo que se evitaron para estos efectos.
+
+## Declaración de uso de inteligencia artificial
+
+Para esta práctica utilicé Codex como apoyo. Consultar la compatibilidad según Baseline, redactar este informe y entender cómo funciona cada propiedad.
+
+Durante la revisión, y con ayuda de la herramienta, se ajustó el resultado inicial: se reforzó el contorno del control con `:focus` y se agregó `:focus-within` para cancelar la animación de entrada cuando el contenido recibe el foco. Además, se modificó la redacción del LEEME para explicar de forma más clara lo implementado. La ayuda incluyó explicaciones y documentación.
