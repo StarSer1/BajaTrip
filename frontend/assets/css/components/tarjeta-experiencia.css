@@ -84,7 +84,7 @@
 
 /*Punto 7: el foco también se muestra al hacer clic, sin depender de :focus-visible.*/ 
 .tarjeta-experiencia summary:focus {
-  outline: 3px solid var(--color-acento);
+  outline: 3px solid var(--color-foco);
   outline-offset: 5px;
   border-radius: 4px;
 }
