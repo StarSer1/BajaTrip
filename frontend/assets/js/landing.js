@@ -121,7 +121,7 @@
     grid.innerHTML = results
       .map(
         (t) =>
-          `<article class="card"><div class="photo"><img src="https://images.unsplash.com/${t.image}?auto=format&fit=crop&w=800&q=80" alt="Fotografía ilustrativa: ${t.name}" loading="lazy" width="800" height="900"><span class="badge">${t.category}</span></div><p class="meta">${t.destination.toUpperCase()} &nbsp; · &nbsp; ${t.duration} horas &nbsp; · &nbsp; Ejemplo</p><h3><button data-tour="${t.id}">${t.name}</button></h3><div class="price">Desde <strong>${money(t.price)}</strong> MXN / persona</div></article>`,
+          `<article class="card"><div class="photo"><img src="https://images.unsplash.com/${t.image}?auto=format&fit=crop&w=800&q=80" alt="Fotografía ilustrativa: ${t.name}" loading="lazy" width="800" height="900"><span class="badge">${t.category}</span><button class="details-button" data-tour="${t.id}">Ver detalles</button></div><p class="meta">${t.destination.toUpperCase()} &nbsp; · &nbsp; ${t.duration} horas &nbsp; · &nbsp; Ejemplo</p><h3><button data-tour="${t.id}">${t.name}</button></h3><div class="price">Desde <strong>${money(t.price)}</strong> MXN / persona</div></article>`,
       )
       .join("");
     document.querySelector("#count").textContent =
