@@ -280,6 +280,141 @@ h2 {
 .card:hover img {
   transform: scale(1.035);
 }
+.tarjeta-experiencia {
+  /* Punto 1: base visual de la tarjeta integrada en la landing. */
+  max-width: 440px;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  border: 1px solid #dce2d8;
+  border-radius: 13px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 240ms ease;
+}
+.tarjeta-experiencia__imagen {
+  /* Punto 2: imagen estable, sin cambiar la maquetación al cargar. */
+  margin: 0;
+  flex: 0 0 auto;
+  aspect-ratio: auto;
+  perspective: 900px;
+}
+.tarjeta-experiencia__imagen img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transition: transform 600ms ease;
+}
+.tarjeta-experiencia__imagen figcaption {
+  padding: 10px 16px;
+  color: #7a877c;
+  background: #fff;
+  font-size: .75rem;
+}
+.tarjeta-experiencia__contenido {
+  /* Punto 5: entrada de tres pasos al aparecer la tarjeta. */
+  padding: 16px 18px 20px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  animation: entrada-experiencia 700ms ease-out both;
+}
+.tarjeta-experiencia h3 {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+}
+.tarjeta-experiencia h3 button {
+  font: inherit;
+  padding: 0;
+  color: inherit;
+  background: none;
+  text-align: left;
+}
+.tarjeta-experiencia__datos {
+  /* Punto 1: datos del plan distribuidos sin romper la tarjeta. */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin: 0 0 20px;
+}
+.tarjeta-experiencia__datos dt {
+  color: #7a877c;
+  font-size: .75rem;
+}
+.tarjeta-experiencia__datos dd {
+  margin: 0;
+  font-size: .85rem;
+  font-weight: 600;
+}
+.tarjeta-experiencia__detalle {
+  /* Punto 1: detalle nativo que conserva la interacción sin JavaScript extra. */
+  margin-top: auto;
+  border-top: 1px solid #dce2d8;
+  padding-top: 12px;
+}
+.tarjeta-experiencia__detalle summary {
+  /* Punto 7: el foco es visible también al hacer clic. */
+  padding: 6px 0;
+  color: #286b5c;
+  font-size: .8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.tarjeta-experiencia__detalle p {
+  margin: 12px 0 0;
+  color: #7a877c;
+  font-size: .8rem;
+  line-height: 1.6;
+}
+.tarjeta-experiencia__nota {
+  margin-top: 14px;
+  color: #7a877c;
+  font-size: .7rem;
+}
+@media (hover: hover) {
+  /* Punto 4: elevación de la tarjeta al pasar el cursor. */
+  .tarjeta-experiencia:hover {
+    transform: translateY(-6px);
+  }
+}
+.tarjeta-experiencia:has(.tarjeta-experiencia__detalle[open]) .tarjeta-experiencia__imagen img {
+  /* Punto 3: la imagen da una vuelta completa y termina como estaba. */
+  animation: vuelta-imagen 800ms ease-in-out both;
+}
+@keyframes vuelta-imagen {
+  0% { transform: rotateY(0deg); }
+  50% { transform: rotateY(180deg); }
+  100% { transform: none; }
+}
+.tarjeta-experiencia summary:focus {
+  outline: 3px solid #eaa65b;
+  outline-offset: 5px;
+  border-radius: 4px;
+}
+@keyframes entrada-experiencia {
+  /* Punto 5: la entrada solo mueve transform y opacity. */
+  0% { opacity: 0; transform: translateY(16px); }
+  60% { opacity: .8; transform: translateY(4px); }
+  100% { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Punto 6: se conserva el contenido y la interacción sin movimiento. */
+  .tarjeta-experiencia,
+  .tarjeta-experiencia__imagen img,
+  .tarjeta-experiencia__contenido {
+    transition: none;
+    animation: none;
+  }
+  .tarjeta-experiencia:hover,
+  .tarjeta-experiencia:has(.tarjeta-experiencia__detalle[open]) .tarjeta-experiencia__imagen img {
+    animation: none;
+  }
+}
 .badge {
   position: absolute;
   top: 15px;

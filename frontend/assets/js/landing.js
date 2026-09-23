@@ -125,7 +125,25 @@
     grid.innerHTML = results
       .map(
         (t) =>
-          `<article class="card"><div class="photo">${responsiveImage(t.image, t.name)}<span class="badge">${t.category}</span><button class="details-button" data-tour="${t.id}">Ver detalles</button></div><p class="meta">${t.destination.toUpperCase()} &nbsp; · &nbsp; ${t.duration} horas &nbsp; · &nbsp; Ejemplo</p><h3><button data-tour="${t.id}">${t.name}</button></h3><div class="price">Desde <strong>${money(t.price)}</strong> MXN / persona</div></article>`,
+          `<article class="card tarjeta-experiencia">
+            <figure class="photo tarjeta-experiencia__imagen">
+              ${responsiveImage(t.image, t.name)}
+              <figcaption>${t.destination} · ${t.category}</figcaption>
+              <button class="details-button" data-tour="${t.id}">Ver detalles</button>
+            </figure>
+            <div class="tarjeta-experiencia__contenido">
+              <h3><button data-tour="${t.id}">${t.name}</button></h3>
+              <dl class="tarjeta-experiencia__datos">
+                <div><dt>Duración</dt><dd>${t.duration} horas</dd></div>
+                <div><dt>Desde</dt><dd>${money(t.price)} MXN</dd></div>
+              </dl>
+              <details class="tarjeta-experiencia__detalle">
+                <summary>Conocer la experiencia</summary>
+                <p>${t.description}</p>
+              </details>
+              <div class="price tarjeta-experiencia__nota">Precio ilustrativo por persona.</div>
+            </div>
+          </article>`,
       )
       .join("");
     document.querySelector("#count").textContent =
