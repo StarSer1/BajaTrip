@@ -108,6 +108,10 @@
       currency: "MXN",
       maximumFractionDigits: 0,
     }).format(value);
+  // Le doy al navegador varias versiones de cada foto para que elija la menor
+  // que se vea bien según el ancho de la tarjeta y la densidad de la pantalla.
+  const responsiveImage = (image, name) =>
+    `<img src="https://images.unsplash.com/${image}?auto=format&fit=crop&w=800&q=80" srcset="https://images.unsplash.com/${image}?auto=format&fit=crop&w=400&q=80 400w, https://images.unsplash.com/${image}?auto=format&fit=crop&w=800&q=80 800w, https://images.unsplash.com/${image}?auto=format&fit=crop&w=1200&q=80 1200w" sizes="(min-width: 1000px) 31vw, (min-width: 641px) 46vw, 100vw" alt="Fotografía ilustrativa: ${name}" loading="lazy" width="800" height="600">`;
   const today = () => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -121,7 +125,7 @@
     grid.innerHTML = results
       .map(
         (t) =>
-          `<article class="card"><div class="photo"><img src="https://images.unsplash.com/${t.image}?auto=format&fit=crop&w=800&q=80" alt="Fotografía ilustrativa: ${t.name}" loading="lazy" width="800" height="900"><span class="badge">${t.category}</span><button class="details-button" data-tour="${t.id}">Ver detalles</button></div><p class="meta">${t.destination.toUpperCase()} &nbsp; · &nbsp; ${t.duration} horas &nbsp; · &nbsp; Ejemplo</p><h3><button data-tour="${t.id}">${t.name}</button></h3><div class="price">Desde <strong>${money(t.price)}</strong> MXN / persona</div></article>`,
+          `<article class="card"><div class="photo">${responsiveImage(t.image, t.name)}<span class="badge">${t.category}</span><button class="details-button" data-tour="${t.id}">Ver detalles</button></div><p class="meta">${t.destination.toUpperCase()} &nbsp; · &nbsp; ${t.duration} horas &nbsp; · &nbsp; Ejemplo</p><h3><button data-tour="${t.id}">${t.name}</button></h3><div class="price">Desde <strong>${money(t.price)}</strong> MXN / persona</div></article>`,
       )
       .join("");
     document.querySelector("#count").textContent =

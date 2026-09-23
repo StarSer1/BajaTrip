@@ -33,6 +33,8 @@ h3,
 p {
   margin-top: 0;
 }
+/* En textos y controles uso rem para que el tamaño elegido por la persona
+   usuaria siga teniendo efecto; dejo px para medidas visuales más rígidas. */
 h2,
 h3 {
   font-family: Manrope, sans-serif;
@@ -56,7 +58,9 @@ input:focus-visible {
     url("https://images.unsplash.com/photo-1512813195386-6cf811ad3542?auto=format&fit=crop&w=2400&q=85")
       center 53% / cover,
     #2b7887;
-  min-height: 810px;
+    /* En teléfonos uso dvh para que la portada mida lo que realmente está visible.
+      El mínimo evita que el buscador quede demasiado apretado en pantallas bajas. */
+    min-height: max(700px, 100dvh);
 }
 .navigation {
   display: flex;
@@ -123,7 +127,7 @@ h1 {
   margin: 68px 0 30px;
 }
 .hero-bottom h2 {
-  font-size: clamp(24px, 2.35vw, 34px);
+  font-size: clamp(1.5rem, 2.35vw, 2.125rem);
   line-height: 1.2;
   margin: 0;
 }
@@ -166,7 +170,7 @@ h1 {
   color: white;
   border-radius: 8px;
   padding: 17px 22px;
-  font-size: 12px;
+  font-size: .75rem;
   font-weight: 600;
 }
 .button:hover {
@@ -253,11 +257,15 @@ h2 {
 }
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* Mantengo tres columnas estables para que una categoría con pocos planes
+     no haga que sus tarjetas crezcan de tamaño. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 30px 22px;
 }
 .photo {
-  height: 310px;
+  /* Reservo el espacio de la imagen antes de que termine de cargar para que
+     el contenido de la tarjeta no salte. */
+  aspect-ratio: 4 / 3;
   border-radius: 13px;
   overflow: hidden;
   position: relative;
@@ -332,16 +340,31 @@ h2 {
   padding-bottom: 8px;
 }
 .story {
+  container-type: inline-size;
   display: grid;
-  grid-template-columns: 1fr 1fr;
   border-radius: 16px;
   overflow: hidden;
   background: #efeee5;
 }
+.story-image,
+.story-copy {
+  min-width: 0;
+}
+/* Este componente mira el ancho de su propio contenedor, no el de la ventana.
+   Así también funciona bien si más adelante lo coloco dentro de otra columna. */
+@container (min-width: 760px) {
+  .story {
+    grid-template-columns: 1fr 1fr;
+  }
+}
 .story-image {
-  min-height: 420px;
+  /* La hago más panorámica para que esta sección no empuje demasiado el texto. */
+  aspect-ratio: 13 /3;
+  max-height: 620px;
   background:
-    url("https://images.unsplash.com/photo-1512813195386-6cf811ad3542?auto=format&fit=crop&w=1000&q=85")
+    /* Reutilizo la imagen de Balandra que también aparece en la experiencia
+       de La Paz para mantener coherencia visual en toda la landing. */
+    url("https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&fit=crop&w=1600&q=85")
       center/cover,
     #3d7f84;
 }
@@ -502,6 +525,9 @@ dialog input {
   .search label:nth-child(2) {
     border: 0;
   }
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .destinations {
     align-items: start;
     flex-direction: column;
@@ -509,9 +535,6 @@ dialog input {
   }
   .destinations > div {
     gap: 20px;
-  }
-  .photo {
-    height: 255px;
   }
   .story-copy {
     padding: 34px;
@@ -614,9 +637,6 @@ dialog input {
   .grid {
     grid-template-columns: 1fr;
     gap: 28px;
-  }
-  .photo {
-    height: 340px;
   }
   .card h3 {
     font-size: 21px;
