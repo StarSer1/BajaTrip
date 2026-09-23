@@ -111,7 +111,7 @@
   // Le doy al navegador varias versiones de cada foto para que elija la menor
   // que se vea bien según el ancho de la tarjeta y la densidad de la pantalla.
   const responsiveImage = (image, name) =>
-    `<img src="https://images.unsplash.com/${image}?auto=format&fit=crop&w=800&q=80" srcset="https://images.unsplash.com/${image}?auto=format&fit=crop&w=400&q=80 400w, https://images.unsplash.com/${image}?auto=format&fit=crop&w=800&q=80 800w, https://images.unsplash.com/${image}?auto=format&fit=crop&w=1200&q=80 1200w" sizes="(min-width: 1000px) 31vw, (min-width: 641px) 46vw, 100vw" alt="Fotografía ilustrativa: ${name}" loading="lazy" width="800" height="600">`;
+    `<img src="https://images.unsplash.com/${image}?auto=format&fit=crop&w=800&q=80" srcset="https://images.unsplash.com/${image}?auto=format&fit=crop&w=400&q=80 400w, https://images.unsplash.com/${image}?auto=format&fit=crop&w=800&q=80 800w, https://images.unsplash.com/${image}?auto=format&fit=crop&w=1200&q=80 1200w" sizes="auto, (max-width: 30rem) calc(100vw - 2.25rem), 440px" alt="Fotografía ilustrativa: ${name}" loading="lazy" width="800" height="600">`;
   const today = () => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -125,14 +125,16 @@
     grid.innerHTML = results
       .map(
         (t) =>
-          `<article class="card tarjeta-experiencia">
+          `<article class="card tarjeta-experiencia" aria-labelledby="titulo-${t.id}">
             <figure class="photo tarjeta-experiencia__imagen">
-              ${responsiveImage(t.image, t.name)}
+              <div class="tarjeta-experiencia__foto">
+                ${responsiveImage(t.image, t.name)}
+                <button class="details-button" data-tour="${t.id}" aria-label="Ver detalles de ${t.name}">Ver detalles</button>
+              </div>
               <figcaption>${t.destination} · ${t.category}</figcaption>
-              <button class="details-button" data-tour="${t.id}">Ver detalles</button>
             </figure>
             <div class="tarjeta-experiencia__contenido">
-              <h3><button data-tour="${t.id}">${t.name}</button></h3>
+              <h3 id="titulo-${t.id}"><button data-tour="${t.id}">${t.name}</button></h3>
               <dl class="tarjeta-experiencia__datos">
                 <div><dt>Duración</dt><dd>${t.duration} horas</dd></div>
                 <div><dt>Desde</dt><dd>${money(t.price)} MXN</dd></div>

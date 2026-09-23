@@ -14,7 +14,7 @@
   <body>
     <a class="skip" href="#experiencias">Saltar a experiencias</a>
     <main>
-      <section class="hero">
+      <section class="hero" aria-labelledby="titulo-inicio">
         <header class="wrap navigation">
           <a class="logo" href="index.html"
             ><b class="symbol">≈</b> baja<b>trip</b><sup>®</sup></a
@@ -27,13 +27,13 @@
           <a class="nav-cta" href="#experiencias">Encuentra tu aventura</a>
         </header>
         <div class="wrap hero-content">
-          <h1>BAJA SUR</h1>
+          <h1 id="titulo-inicio">BAJA SUR</h1>
           <div class="hero-bottom">
             <h2>
               Hay lugares que visitas.<br />Y otros que se quedan contigo.
             </h2>
           </div>
-          <form id="search" class="search">
+          <form id="search" class="search" role="search" aria-label="Buscar experiencias">
             <label
               ><span>¿A dónde vamos?</span
               ><select id="destination">
@@ -78,11 +78,11 @@
           ><button data-destination="Comondú">Comondú</button>
         </div>
       </section>
-      <section id="experiencias" class="wrap section">
+      <section id="experiencias" class="wrap section" aria-labelledby="titulo-experiencias">
         <div class="heading">
           <div>
             <p class="eyebrow">SAL DE LA RUTINA</p>
-            <h2>Elige el plan.<br />Nos vemos en la Baja.</h2>
+            <h2 id="titulo-experiencias">Elige el plan.<br />Nos vemos en la Baja.</h2>
           </div>
         </div>
         <div class="filter-row">
@@ -112,32 +112,36 @@
           >Explorar experiencias en el catálogo</a
         >
       </section>
-       <!-- Uso este bloque como ejemplo de un componente que se adapta al espacio
-         que recibe. La consulta @container vive en landing.css y decide si
-         imagen y texto van juntos o uno debajo del otro. -->
-       <section class="wrap story">
-        <div
-          class="story-image"
-          role="img"
-          aria-label="Paisaje costero de Balandra, La Paz, Baja California Sur"
-        ></div>
-        <div class="story-copy">
-          <p class="eyebrow">LEJOS DE LO DE SIEMPRE</p>
-          <h2>No necesitas ir lejos.<br />Solo sentirte lejos.</h2>
-          <p>
-            Donde el desierto abraza al mar, cada camino tiene algo que contar.
-            Un paseo en lancha, las calles de un pueblo mágico o una tarde sin
-            mirar el reloj.
-          </p>
-          <a class="button" href="#destinos">Descubre tu destino</a
-          ><small>Esto es Baja California Sur.</small>
+      <!-- La sección es el contenedor; su contenido cambia según el espacio disponible. -->
+      <section class="wrap story" aria-labelledby="titulo-historia">
+        <div class="story-layout">
+          <figure class="story-image">
+            <img
+              src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&amp;fit=crop&amp;w=800&amp;q=85"
+              srcset="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&amp;fit=crop&amp;w=400&amp;q=85 400w, https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&amp;fit=crop&amp;w=800&amp;q=85 800w, https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&amp;fit=crop&amp;w=1600&amp;q=85 1600w"
+              sizes="auto, (min-width: 55rem) 50vw, 100vw"
+              width="800" height="600" loading="lazy"
+              alt="Fotografía ilustrativa de una playa y el mar"
+            >
+          </figure>
+          <div class="story-copy">
+            <p class="eyebrow">LEJOS DE LO DE SIEMPRE</p>
+            <h2 id="titulo-historia">No necesitas ir lejos.<br />Solo sentirte lejos.</h2>
+            <p>
+              Donde el desierto abraza al mar, cada camino tiene algo que contar.
+              Un paseo en lancha, las calles de un pueblo mágico o una tarde sin
+              mirar el reloj.
+            </p>
+            <a class="button" href="#destinos">Descubre tu destino</a
+            ><small>Esto es Baja California Sur.</small>
+          </div>
         </div>
       </section>
-      <section id="como-funciona" class="wrap section">
+      <section id="como-funciona" class="wrap section" aria-labelledby="titulo-pasos">
         <div class="heading">
           <div>
             <p class="eyebrow">MENOS VUELTAS, MÁS AVENTURAS</p>
-            <h2>Tu viaje empieza fácil.</h2>
+            <h2 id="titulo-pasos">Tu viaje empieza fácil.</h2>
           </div>
           <p>Así funcionará tu próxima reserva</p>
         </div>
@@ -182,7 +186,9 @@
     </footer>
     <dialog id="details" aria-labelledby="dialog-title">
       <button class="close" aria-label="Cerrar detalles">✕</button>
-      <div id="dialog-content"></div>
+      <div id="dialog-content">
+        <h2 id="dialog-title">Detalles de la experiencia</h2>
+      </div>
     </dialog>
   </body>
 </html>

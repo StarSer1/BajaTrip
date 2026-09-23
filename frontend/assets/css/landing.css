@@ -10,6 +10,7 @@
 }
 body {
   margin: 0;
+  overflow-wrap: break-word;
 }
 button,
 select,
@@ -58,12 +59,14 @@ input:focus-visible {
     url("https://images.unsplash.com/photo-1512813195386-6cf811ad3542?auto=format&fit=crop&w=2400&q=85")
       center 53% / cover,
     #2b7887;
-    /* En teléfonos uso dvh para que la portada mida lo que realmente está visible.
-      El mínimo evita que el buscador quede demasiado apretado en pantallas bajas. */
-    min-height: max(700px, 100dvh);
+  /* La portada sigue el alto visible y puede crecer si su contenido lo necesita. */
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: clamp(2rem, 6vh, 5rem);
 }
 .navigation {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   padding-top: 28px;
@@ -72,7 +75,7 @@ input:focus-visible {
 .logo {
   display: inline-flex;
   align-items: center;
-  font-size: 29px;
+  font-size: 1.8125rem;
   letter-spacing: -1.5px;
 }
 .symbol {
@@ -83,18 +86,19 @@ input:focus-visible {
   width: 36px;
   height: 36px;
   line-height: 1;
-  font-size: 36px;
+  font-size: 2.25rem;
   margin-right: 8px;
 }
 .logo sup {
-  font-size: 11px;
+  font-size: 0.75rem;
   align-self: start;
   margin: 5px;
 }
 .navigation nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 32px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .navigation nav a:hover {
   text-decoration: underline;
@@ -104,20 +108,19 @@ input:focus-visible {
   border: 1px solid #ffffff80;
   border-radius: 30px;
   padding: 12px 18px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .hero-content {
   padding-top: 85px;
 }
 h1 {
   font-family: Manrope, sans-serif;
-  font-size: clamp(80px, 14.8vw, 214px);
+  font-size: clamp(2.5rem, 14.8vw, 13.375rem);
   letter-spacing: -0.065em;
   line-height: 1.08;
   text-align: center;
   font-weight: 800;
   margin: 0;
-  white-space: nowrap;
 }
 .hero-bottom {
   display: flex;
@@ -135,7 +138,7 @@ h1 {
   background: white;
   color: #29453e;
   display: grid;
-  grid-template-columns: 1.2fr 1.3fr 0.8fr auto;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
   padding: 13px;
   gap: 12px;
   border-radius: 13px;
@@ -150,17 +153,18 @@ h1 {
   min-width: 0;
 }
 .search label span {
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 .search select {
   border: 0;
   background: white;
   width: 100%;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #707c77;
   padding: 2px 0;
   cursor: pointer;
+  min-height: 2.75rem;
 }
 .button {
   display: inline-flex;
@@ -172,6 +176,9 @@ h1 {
   padding: 17px 22px;
   font-size: .75rem;
   font-weight: 600;
+  min-width: 0;
+  min-height: 2.75rem;
+  text-align: center;
 }
 .button:hover {
   background: #286b5c;
@@ -185,10 +192,9 @@ h1 {
   gap: 24px;
 }
 .destinations > span {
-  font-size: 9px;
+  font-size: 0.75rem;
   letter-spacing: 0.14em;
   color: #7b867d;
-  white-space: nowrap;
 }
 .destinations > div {
   display: flex;
@@ -197,7 +203,7 @@ h1 {
 }
 .destinations button {
   background: none;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: #344e43;
   padding: 8px 0;
 }
@@ -215,14 +221,14 @@ h1 {
   margin-bottom: 30px;
 }
 .eyebrow {
-  font-size: 10px;
+  font-size: 0.75rem;
   letter-spacing: 0.16em;
   color: #718577;
   font-weight: 600;
   margin-bottom: 16px;
 }
 h2 {
-  font-size: 39px;
+  font-size: 2.4375rem;
   line-height: 1.17;
   margin-bottom: 0;
 }
@@ -244,7 +250,7 @@ h2 {
   border-radius: 24px;
   background: none;
   color: #536355;
-  font-size: 11px;
+  font-size: 0.75rem;
 }
 .filters button[aria-pressed="true"] {
   background: #203f35;
@@ -252,14 +258,13 @@ h2 {
   border-color: #203f35;
 }
 #count {
-  font-size: 11px;
+  font-size: 0.75rem;
   color: #788578;
 }
 .grid {
   display: grid;
-  /* Mantengo tres columnas estables para que una categoría con pocos planes
-     no haga que sus tarjetas crezcan de tamaño. */
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* Caben tantas columnas como permita el espacio; el mínimo nunca desborda. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
   gap: 30px 22px;
 }
 .photo {
@@ -283,6 +288,7 @@ h2 {
 .tarjeta-experiencia {
   /* Punto 1: base visual de la tarjeta integrada en la landing. */
   max-width: 440px;
+  min-width: 0;
   width: 100%;
   height: 100%;
   background: #fff;
@@ -299,6 +305,10 @@ h2 {
   flex: 0 0 auto;
   aspect-ratio: auto;
   perspective: 900px;
+}
+.tarjeta-experiencia__foto {
+  position: relative;
+  aspect-ratio: 4 / 3;
 }
 .tarjeta-experiencia__imagen img {
   display: block;
@@ -323,6 +333,9 @@ h2 {
   flex: 1;
   flex-direction: column;
   animation: entrada-experiencia 700ms ease-out both;
+}
+.tarjeta-experiencia__contenido:focus-within {
+  animation: none;
 }
 .tarjeta-experiencia h3 {
   margin: 0 0 16px;
@@ -423,7 +436,7 @@ h2 {
   padding: 7px 11px;
   background: #fffffff0;
   color: #3b5349;
-  font-size: 10px;
+  font-size: 0.75rem;
 }
 .details-button {
   position: absolute;
@@ -433,19 +446,19 @@ h2 {
   padding: 9px 12px;
   background: white;
   color: #204538;
-  font-size: 10px;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 .details-button:hover {
   background: #e9eee3;
 }
 .meta {
-  font-size: 10px;
+  font-size: 0.75rem;
   color: #7a877c;
   margin: 17px 0 7px;
 }
 .card h3 {
-  font-size: 19px;
+  font-size: 1.1875rem;
   letter-spacing: -0.03em;
   margin: 0 0 10px;
 }
@@ -460,23 +473,26 @@ h2 {
   text-decoration: underline;
 }
 .price {
-  font-size: 11px;
+  font-size: 0.75rem;
   color: #7a8477;
 }
 .price strong {
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: #3a5145;
 }
 .catalog {
   display: table;
   margin: 38px auto 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   border-bottom: 1px solid #8d9d90;
   padding-bottom: 8px;
 }
 .story {
-  container-type: inline-size;
+  container: historia / inline-size;
+}
+.story-layout {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   border-radius: 16px;
   overflow: hidden;
   background: #efeee5;
@@ -485,44 +501,46 @@ h2 {
 .story-copy {
   min-width: 0;
 }
-/* Este componente mira el ancho de su propio contenedor, no el de la ventana.
-   Así también funciona bien si más adelante lo coloco dentro de otra columna. */
-@container (min-width: 760px) {
-  .story {
-    grid-template-columns: 1fr 1fr;
+.story-image {
+  margin: 0;
+  background: #3d7f84;
+}
+.story-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+/* Consultamos la sección padre y adaptamos su contenido interior. */
+@container historia (min-width: 48rem) {
+  .story-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .story-image img {
+    height: 100%;
   }
 }
-.story-image {
-  /* La hago más panorámica para que esta sección no empuje demasiado el texto. */
-  aspect-ratio: 13 /3;
-  max-height: 620px;
-  background:
-    /* Reutilizo la imagen de Balandra que también aparece en la experiencia
-       de La Paz para mantener coherencia visual en toda la landing. */
-    url("https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&fit=crop&w=1600&q=85")
-      center/cover,
-    #3d7f84;
-}
 .story-copy {
-  padding: 55px;
+  padding: clamp(1.5rem, 4cqi, 3.5rem);
 }
 .story-copy h2 {
-  font-size: 34px;
+  font-size: clamp(1.5rem, 3.5cqi, 2.125rem);
 }
 .story-copy > p:not(.eyebrow) {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: #7b8174;
   margin: 22px 0;
 }
 .story-copy small {
   display: block;
   margin-top: 28px;
-  font-size: 10px;
+  font-size: 0.75rem;
   color: #808876;
 }
 .steps {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
   gap: 42px;
   margin-top: 45px;
 }
@@ -531,15 +549,15 @@ h2 {
   padding-top: 22px;
 }
 .steps span {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #819078;
 }
 .steps h3 {
-  font-size: 19px;
+  font-size: 1.1875rem;
   margin: 22px 0 10px;
 }
 .steps p {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: #7b8475;
   max-width: 300px;
 }
@@ -551,21 +569,23 @@ footer {
 .footer-top,
 .footer-bottom {
   display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
   justify-content: space-between;
   align-items: center;
 }
 .footer-top p {
-  font-size: 11px;
+  font-size: 0.75rem;
   opacity: 0.65;
   margin: 12px 0 30px;
 }
 .footer-top > a {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .footer-bottom {
   border-top: 1px solid #ffffff25;
   padding-top: 20px;
-  font-size: 10px;
+  font-size: 0.75rem;
   color: #b8ccc0;
 }
 #empty {
@@ -591,6 +611,7 @@ dialog {
   padding: 35px;
   width: min(540px, calc(100% - 32px));
   max-height: 90vh;
+  max-height: 90dvh;
   color: #294334;
   background: #fbfbf8;
 }
@@ -607,18 +628,18 @@ dialog::backdrop {
   color: #2e493a;
 }
 dialog h2 {
-  font-size: 30px;
+  font-size: 1.875rem;
   margin: 16px 0 20px;
 }
 dialog p,
 dialog li {
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.7;
 }
 dialog label {
   display: block;
   margin: 20px 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 dialog input {
   display: block;
@@ -632,7 +653,7 @@ dialog input {
   background: #e9eee3;
   border-radius: 8px;
   padding: 15px;
-  font-size: 12px !important;
+  font-size: 0.75rem !important;
 }
 .result {
   margin: 18px 0 0;
@@ -641,7 +662,7 @@ dialog input {
 [hidden] {
   display: none !important;
 }
-@media (max-width: 1000px) {
+@media (max-width: 64rem) {
   .wrap {
     width: calc(100% - 64px);
   }
@@ -651,17 +672,8 @@ dialog input {
   .navigation nav {
     gap: 20px;
   }
-  .hero {
-    min-height: 750px;
-  }
-  .search {
-    grid-template-columns: 1fr 1fr;
-  }
-  .search label:nth-child(2) {
+  .search label {
     border: 0;
-  }
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .destinations {
     align-items: start;
@@ -671,17 +683,11 @@ dialog input {
   .destinations > div {
     gap: 20px;
   }
-  .story-copy {
-    padding: 34px;
-  }
-  .story-copy h2 {
-    font-size: 29px;
-  }
   .section {
     padding-block: 60px;
   }
 }
-@media (max-width: 640px) {
+@media (max-width: 40rem) {
   .wrap {
     width: calc(100% - 36px);
   }
@@ -690,32 +696,24 @@ dialog input {
     gap: 14px;
   }
   .logo {
-    font-size: 25px;
+    font-size: 1.5625rem;
   }
   .symbol {
     width: 30px;
     height: 30px;
-    font-size: 30px;
+    font-size: 1.875rem;
   }
   .navigation nav {
-    gap: 17px;
-    font-size: 11px;
-  }
-  .navigation nav a:last-child {
-    display: none;
+    font-size: 0.75rem;
+    width: 100%;
+    gap: 12px 20px;
   }
   .hero-content {
     padding-top: 64px;
   }
-  h1 {
-    font-size: 17vw;
-  }
   .hero-bottom {
     display: block;
     margin: 46px 0 23px;
-  }
-  .hero-bottom h2 {
-    font-size: 26px;
   }
   .search {
     padding: 10px;
@@ -725,17 +723,14 @@ dialog input {
     padding: 7px;
   }
   .search label span {
-    font-size: 10px;
+    font-size: 0.75rem;
   }
   .search select {
-    font-size: 11px;
+    font-size: 0.75rem;
   }
   .search .button {
-    font-size: 11px;
+    font-size: 0.75rem;
     padding: 12px;
-  }
-  .hero {
-    min-height: 700px;
   }
   .destinations {
     padding-block: 24px;
@@ -744,7 +739,7 @@ dialog input {
     gap: 8px 22px;
   }
   .destinations button {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .section {
     padding-block: 46px;
@@ -754,7 +749,7 @@ dialog input {
     margin-bottom: 24px;
   }
   h2 {
-    font-size: 32px;
+    font-size: 2rem;
   }
   .filter-row {
     flex-direction: column;
@@ -767,32 +762,18 @@ dialog input {
   }
   .filters button {
     padding: 9px 12px;
-    font-size: 10px;
+    font-size: 0.75rem;
   }
   .grid {
-    grid-template-columns: 1fr;
     gap: 28px;
   }
   .card h3 {
-    font-size: 21px;
+    font-size: 1.3125rem;
   }
   .meta {
     margin-top: 13px;
   }
-  .story {
-    grid-template-columns: 1fr;
-  }
-  .story-image {
-    min-height: 260px;
-  }
-  .story-copy {
-    padding: 30px;
-  }
-  .story-copy h2 {
-    font-size: 30px;
-  }
   .steps {
-    grid-template-columns: 1fr;
     gap: 18px;
     margin-top: 30px;
   }
@@ -808,14 +789,14 @@ dialog input {
   }
   .footer-top > a {
     max-width: 140px;
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.7;
   }
   .footer-bottom {
-    font-size: 9px;
+    font-size: 0.75rem;
   }
   .footer-top p {
-    font-size: 10px;
+    font-size: 0.75rem;
   }
   dialog {
     padding: 28px 22px;
@@ -828,5 +809,9 @@ dialog input {
   * {
     transition: none !important;
     animation: none !important;
+  }
+  .tarjeta-experiencia:hover,
+  .card:hover img {
+    transform: none;
   }
 }
