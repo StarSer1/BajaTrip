@@ -1,8 +1,43 @@
 ﻿@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
 :root {
-  font-family: "DM Sans", sans-serif;
-  color: #203a34;
-  background: #fbfbf8;
+  /* Sistema de diseño compartido: cambia una variable y todas las vistas la heredan. */
+  --color-marca: #174f47;
+  --color-marca-hover: #286b5c;
+  --color-texto: #203a34;
+  --color-secundario: #7a877c;
+  --color-fondo: #fbfbf8;
+  --color-superficie: #ffffff;
+  --color-borde: #dce2d8;
+  --color-suave: #efeee5;
+  --color-aviso: #e9eee3;
+  --color-pie: #123e38;
+  --color-foco: #eaa65b;
+  --color-acento: #b97443;
+  --fuente-cuerpo: "DM Sans", sans-serif;
+  --fuente-titulos: Manrope, sans-serif;
+  --texto-base: 1rem;
+  --texto-pequeno: .75rem;
+  --texto-control: .8125rem;
+  --texto-mediano: .875rem;
+  --texto-tarjeta: 1.1875rem;
+  --texto-seccion: 2.4375rem;
+  --espacio-1: .25rem;
+  --espacio-2: .5rem;
+  --espacio-3: .75rem;
+  --espacio-4: 1rem;
+  --espacio-5: 1.5rem;
+  --espacio-6: 2rem;
+  --espacio-7: 3rem;
+  --espacio-8: 4rem;
+  --radio-control: 8px;
+  --radio-tarjeta: 13px;
+  --ancho-contenido: 1240px;
+  --margen-pagina: 56px;
+  --separacion-tarjetas: 22px;
+  font-family: var(--fuente-cuerpo);
+  font-size: var(--texto-base);
+  color: var(--color-texto);
+  background: var(--color-fondo);
   scroll-behavior: smooth;
 }
 * {
@@ -38,22 +73,22 @@ p {
    usuaria siga teniendo efecto; dejo px para medidas visuales más rígidas. */
 h2,
 h3 {
-  font-family: Manrope, sans-serif;
+  font-family: var(--fuente-titulos);
   letter-spacing: -0.045em;
 }
 a:focus-visible,
 button:focus-visible,
 select:focus-visible,
 input:focus-visible {
-  outline: 3px solid #eaa65b;
+  outline: 3px solid var(--color-foco);
   outline-offset: 4px;
 }
 .wrap {
-  width: min(1240px, calc(100% - 112px));
+  width: min(var(--ancho-contenido), calc(100% - 2 * var(--margen-pagina)));
   margin: auto;
 }
 .hero {
-  color: white;
+  color: var(--color-superficie);
   background:
     linear-gradient(180deg, #093b4d55, transparent 35%, #052e39e8),
     url("https://images.unsplash.com/photo-1512813195386-6cf811ad3542?auto=format&fit=crop&w=2400&q=85")
@@ -87,18 +122,18 @@ input:focus-visible {
   height: 36px;
   line-height: 1;
   font-size: 2.25rem;
-  margin-right: 8px;
+  margin-right: var(--espacio-2);
 }
 .logo sup {
-  font-size: 0.75rem;
+  font-size: var(--texto-pequeno);
   align-self: start;
   margin: 5px;
 }
 .navigation nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 32px;
-  font-size: 0.8125rem;
+  gap: var(--espacio-6);
+  font-size: var(--texto-control);
 }
 .navigation nav a:hover {
   text-decoration: underline;
@@ -107,14 +142,14 @@ input:focus-visible {
 .nav-cta {
   border: 1px solid #ffffff80;
   border-radius: 30px;
-  padding: 12px 18px;
-  font-size: 0.75rem;
+  padding: var(--espacio-3) 18px;
+  font-size: var(--texto-pequeno);
 }
 .hero-content {
   padding-top: 85px;
 }
 h1 {
-  font-family: Manrope, sans-serif;
+  font-family: var(--fuente-titulos);
   font-size: clamp(2.5rem, 14.8vw, 13.375rem);
   letter-spacing: -0.065em;
   line-height: 1.08;
@@ -135,33 +170,33 @@ h1 {
   margin: 0;
 }
 .search {
-  background: white;
-  color: #29453e;
+  background: var(--color-superficie);
+  color: var(--color-texto);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
   padding: 13px;
-  gap: 12px;
-  border-radius: 13px;
+  gap: var(--espacio-3);
+  border-radius: var(--radio-tarjeta);
   box-shadow: 0 10px 35px #06262920;
 }
 .search label {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 6px 16px;
-  border-right: 1px solid #e1e7e1;
+  gap: var(--espacio-2);
+  padding: 6px var(--espacio-4);
+  border-right: 1px solid var(--color-borde);
   min-width: 0;
 }
 .search label span {
-  font-size: 0.75rem;
+  font-size: var(--texto-pequeno);
   font-weight: 600;
 }
 .search select {
   border: 0;
-  background: white;
+  background: var(--color-superficie);
   width: 100%;
-  font-size: 0.75rem;
-  color: #707c77;
+  font-size: var(--texto-pequeno);
+  color: var(--color-secundario);
   padding: 2px 0;
   cursor: pointer;
   min-height: 2.75rem;
@@ -170,31 +205,31 @@ h1 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #174f47;
-  color: white;
-  border-radius: 8px;
+  background: var(--color-marca);
+  color: var(--color-superficie);
+  border-radius: var(--radio-control);
   padding: 17px 22px;
-  font-size: .75rem;
+  font-size: var(--texto-pequeno);
   font-weight: 600;
   min-width: 0;
   min-height: 2.75rem;
   text-align: center;
 }
 .button:hover {
-  background: #286b5c;
+  background: var(--color-marca-hover);
 }
 .destinations {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-block: 32px;
-  border-bottom: 1px solid #dde1d9;
-  gap: 24px;
+  padding-block: var(--espacio-6);
+  border-bottom: 1px solid var(--color-borde);
+  gap: var(--espacio-5);
 }
 .destinations > span {
-  font-size: 0.75rem;
+  font-size: var(--texto-pequeno);
   letter-spacing: 0.14em;
-  color: #7b867d;
+  color: var(--color-secundario);
 }
 .destinations > div {
   display: flex;
@@ -203,12 +238,12 @@ h1 {
 }
 .destinations button {
   background: none;
-  font-size: 0.8125rem;
-  color: #344e43;
-  padding: 8px 0;
+  font-size: var(--texto-control);
+  color: var(--color-texto);
+  padding: var(--espacio-2) 0;
 }
 .destinations button:hover {
-  color: #b97443;
+  color: var(--color-acento);
 }
 .section {
   padding-block: 78px;
@@ -221,14 +256,14 @@ h1 {
   margin-bottom: 30px;
 }
 .eyebrow {
-  font-size: 0.75rem;
+  font-size: var(--texto-pequeno);
   letter-spacing: 0.16em;
-  color: #718577;
+  color: var(--color-secundario);
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: var(--espacio-4);
 }
 h2 {
-  font-size: 2.4375rem;
+  font-size: var(--texto-seccion);
   line-height: 1.17;
   margin-bottom: 0;
 }
@@ -237,41 +272,41 @@ h2 {
   justify-content: space-between;
   align-items: center;
   gap: 15px;
-  margin: 32px 0 16px;
+  margin: var(--espacio-6) 0 var(--espacio-4);
 }
 .filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--espacio-2);
 }
 .filters button {
   padding: 10px 18px;
-  border: 1px solid #dce2d8;
+  border: 1px solid var(--color-borde);
   border-radius: 24px;
   background: none;
   color: #536355;
-  font-size: 0.75rem;
+  font-size: var(--texto-pequeno);
 }
 .filters button[aria-pressed="true"] {
-  background: #203f35;
-  color: white;
-  border-color: #203f35;
+  background: var(--color-marca);
+  color: var(--color-superficie);
+  border-color: var(--color-marca);
 }
 #count {
-  font-size: 0.75rem;
-  color: #788578;
+  font-size: var(--texto-pequeno);
+  color: var(--color-secundario);
 }
 .grid {
   display: grid;
   /* Caben tantas columnas como permita el espacio; el mínimo nunca desborda. */
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
-  gap: 30px 22px;
+  gap: 30px var(--separacion-tarjetas);
 }
 .photo {
   /* Reservo el espacio de la imagen antes de que termine de cargar para que
      el contenido de la tarjeta no salte. */
   aspect-ratio: 4 / 3;
-  border-radius: 13px;
+  border-radius: var(--radio-tarjeta);
   overflow: hidden;
   position: relative;
   background: #4f8482;
@@ -291,9 +326,9 @@ h2 {
   min-width: 0;
   width: 100%;
   height: 100%;
-  background: #fff;
-  border: 1px solid #dce2d8;
-  border-radius: 13px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-tarjeta);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -321,14 +356,14 @@ h2 {
   transition: transform 600ms ease;
 }
 .tarjeta-experiencia__imagen figcaption {
-  padding: 10px 16px;
-  color: #7a877c;
-  background: #fff;
-  font-size: .75rem;
+  padding: 10px var(--espacio-4);
+  color: var(--color-secundario);
+  background: var(--color-superficie);
+  font-size: var(--texto-pequeno);
 }
 .tarjeta-experiencia__contenido {
   /* Punto 5: entrada de tres pasos al aparecer la tarjeta. */
-  padding: 16px 18px 20px;
+  padding: var(--espacio-4) 18px 20px;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -338,7 +373,7 @@ h2 {
   animation: none;
 }
 .tarjeta-experiencia h3 {
-  margin: 0 0 16px;
+  margin: 0 0 var(--espacio-4);
   font-size: 1.25rem;
 }
 .tarjeta-experiencia h3 button {
@@ -352,12 +387,12 @@ h2 {
   /* Punto 1: datos del plan distribuidos sin romper la tarjeta. */
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 24px;
+  gap: var(--espacio-3) var(--espacio-5);
   margin: 0 0 20px;
 }
 .tarjeta-experiencia__datos dt {
-  color: #7a877c;
-  font-size: .75rem;
+  color: var(--color-secundario);
+  font-size: var(--texto-pequeno);
 }
 .tarjeta-experiencia__datos dd {
   margin: 0;
@@ -367,26 +402,26 @@ h2 {
 .tarjeta-experiencia__detalle {
   /* Punto 1: detalle nativo que conserva la interacción sin JavaScript extra. */
   margin-top: auto;
-  border-top: 1px solid #dce2d8;
-  padding-top: 12px;
+  border-top: 1px solid var(--color-borde);
+  padding-top: var(--espacio-3);
 }
 .tarjeta-experiencia__detalle summary {
   /* Punto 7: el foco es visible también al hacer clic. */
   padding: 6px 0;
-  color: #286b5c;
+  color: var(--color-marca-hover);
   font-size: .8rem;
   font-weight: 700;
   cursor: pointer;
 }
 .tarjeta-experiencia__detalle p {
-  margin: 12px 0 0;
-  color: #7a877c;
+  margin: var(--espacio-3) 0 0;
+  color: var(--color-secundario);
   font-size: .8rem;
   line-height: 1.6;
 }
 .tarjeta-experiencia__nota {
   margin-top: 14px;
-  color: #7a877c;
+  color: var(--color-secundario);
   font-size: .7rem;
 }
 @media (hover: hover) {
@@ -405,7 +440,7 @@ h2 {
   100% { transform: none; }
 }
 .tarjeta-experiencia summary:focus {
-  outline: 3px solid #eaa65b;
+  outline: 3px solid var(--color-foco);
   outline-offset: 5px;
   border-radius: 4px;
 }
@@ -436,29 +471,29 @@ h2 {
   padding: 7px 11px;
   background: #fffffff0;
   color: #3b5349;
-  font-size: 0.75rem;
+  font-size: var(--texto-pequeno);
 }
 .details-button {
   position: absolute;
   right: 15px;
   bottom: 15px;
   border-radius: 20px;
-  padding: 9px 12px;
-  background: white;
-  color: #204538;
-  font-size: 0.75rem;
+  padding: 9px var(--espacio-3);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font-size: var(--texto-pequeno);
   font-weight: 600;
 }
 .details-button:hover {
-  background: #e9eee3;
+  background: var(--color-aviso);
 }
 .meta {
-  font-size: 0.75rem;
-  color: #7a877c;
+  font-size: var(--texto-pequeno);
+  color: var(--color-secundario);
   margin: 17px 0 7px;
 }
 .card h3 {
-  font-size: 1.1875rem;
+  font-size: var(--texto-tarjeta);
   letter-spacing: -0.03em;
   margin: 0 0 10px;
 }
@@ -473,19 +508,19 @@ h2 {
   text-decoration: underline;
 }
 .price {
-  font-size: 0.75rem;
-  color: #7a8477;
+  font-size: var(--texto-pequeno);
+  color: var(--color-secundario);
 }
 .price strong {
   font-size: 0.9375rem;
-  color: #3a5145;
+  color: var(--color-texto);
 }
 .catalog {
   display: table;
   margin: 38px auto 0;
-  font-size: 0.75rem;
+  font-size: var(--texto-pequeno);
   border-bottom: 1px solid #8d9d90;
-  padding-bottom: 8px;
+  padding-bottom: var(--espacio-2);
 }
 .story {
   container: historia / inline-size;
@@ -495,7 +530,7 @@ h2 {
   grid-template-columns: minmax(0, 1fr);
   border-radius: 16px;
   overflow: hidden;
-  background: #efeee5;
+  background: var(--color-suave);
 }
 .story-image,
 .story-copy {
@@ -528,15 +563,15 @@ h2 {
   font-size: clamp(1.5rem, 3.5cqi, 2.125rem);
 }
 .story-copy > p:not(.eyebrow) {
-  font-size: 0.8125rem;
-  color: #7b8174;
+  font-size: var(--texto-control);
+  color: var(--color-secundario);
   margin: 22px 0;
 }
 .story-copy small {
   display: block;
   margin-top: 28px;
-  font-size: 0.75rem;
-  color: #808876;
+  font-size: var(--texto-pequeno);
+  color: var(--color-secundario);
 }
 .steps {
   display: grid;
@@ -545,61 +580,61 @@ h2 {
   margin-top: 45px;
 }
 .steps article {
-  border-top: 1px solid #dbe0d5;
+  border-top: 1px solid var(--color-borde);
   padding-top: 22px;
 }
 .steps span {
-  font-size: 0.75rem;
-  color: #819078;
+  font-size: var(--texto-pequeno);
+  color: var(--color-secundario);
 }
 .steps h3 {
-  font-size: 1.1875rem;
+  font-size: var(--texto-tarjeta);
   margin: 22px 0 10px;
 }
 .steps p {
-  font-size: 0.8125rem;
-  color: #7b8475;
+  font-size: var(--texto-control);
+  color: var(--color-secundario);
   max-width: 300px;
 }
 footer {
-  background: #123e38;
-  color: white;
+  background: var(--color-pie);
+  color: var(--color-superficie);
   padding: 42px 0 20px;
 }
 .footer-top,
 .footer-bottom {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: var(--espacio-4);
   justify-content: space-between;
   align-items: center;
 }
 .footer-top p {
-  font-size: 0.75rem;
+  font-size: var(--texto-pequeno);
   opacity: 0.65;
-  margin: 12px 0 30px;
+  margin: var(--espacio-3) 0 30px;
 }
 .footer-top > a {
-  font-size: 0.875rem;
+  font-size: var(--texto-mediano);
 }
 .footer-bottom {
   border-top: 1px solid #ffffff25;
   padding-top: 20px;
-  font-size: 0.75rem;
+  font-size: var(--texto-pequeno);
   color: #b8ccc0;
 }
 #empty {
   text-align: center;
   padding: 45px;
-  background: #efeee5;
+  background: var(--color-suave);
   border-radius: 12px;
 }
 .skip {
   position: fixed;
   top: -100px;
   left: 20px;
-  background: white;
-  padding: 12px;
+  background: var(--color-superficie);
+  padding: var(--espacio-3);
   z-index: 10;
 }
 .skip:focus {
@@ -612,8 +647,8 @@ dialog {
   width: min(540px, calc(100% - 32px));
   max-height: 90vh;
   max-height: 90dvh;
-  color: #294334;
-  background: #fbfbf8;
+  color: var(--color-texto);
+  background: var(--color-fondo);
 }
 dialog::backdrop {
   background: #092a24b8;
@@ -625,33 +660,33 @@ dialog::backdrop {
   right: 15px;
   background: none;
   padding: 10px;
-  color: #2e493a;
+  color: var(--color-texto);
 }
 dialog h2 {
   font-size: 1.875rem;
-  margin: 16px 0 20px;
+  margin: var(--espacio-4) 0 20px;
 }
 dialog p,
 dialog li {
-  font-size: 0.875rem;
+  font-size: var(--texto-mediano);
   line-height: 1.7;
 }
 dialog label {
   display: block;
   margin: 20px 0;
-  font-size: 0.8125rem;
+  font-size: var(--texto-control);
 }
 dialog input {
   display: block;
   width: 100%;
-  padding: 12px;
+  padding: var(--espacio-3);
   border: 1px solid #bdc9ba;
   border-radius: 6px;
-  margin-top: 8px;
+  margin-top: var(--espacio-2);
 }
 .notice {
-  background: #e9eee3;
-  border-radius: 8px;
+  background: var(--color-aviso);
+  border-radius: var(--radio-control);
   padding: 15px;
   font-size: 0.75rem !important;
 }
@@ -663,8 +698,8 @@ dialog input {
   display: none !important;
 }
 @media (max-width: 64rem) {
-  .wrap {
-    width: calc(100% - 64px);
+  :root {
+    --margen-pagina: 32px;
   }
   .nav-cta {
     display: none;
@@ -678,7 +713,7 @@ dialog input {
   .destinations {
     align-items: start;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--espacio-3);
   }
   .destinations > div {
     gap: 20px;
@@ -688,8 +723,8 @@ dialog input {
   }
 }
 @media (max-width: 40rem) {
-  .wrap {
-    width: calc(100% - 36px);
+  :root {
+    --margen-pagina: 18px;
   }
   .navigation {
     padding-top: 22px;
@@ -704,12 +739,12 @@ dialog input {
     font-size: 1.875rem;
   }
   .navigation nav {
-    font-size: 0.75rem;
+    font-size: var(--texto-pequeno);
     width: 100%;
-    gap: 12px 20px;
+    gap: var(--espacio-3) 20px;
   }
   .hero-content {
-    padding-top: 64px;
+    padding-top: var(--espacio-8);
   }
   .hero-bottom {
     display: block;
@@ -723,30 +758,30 @@ dialog input {
     padding: 7px;
   }
   .search label span {
-    font-size: 0.75rem;
+    font-size: var(--texto-pequeno);
   }
   .search select {
-    font-size: 0.75rem;
+    font-size: var(--texto-pequeno);
   }
   .search .button {
-    font-size: 0.75rem;
-    padding: 12px;
+    font-size: var(--texto-pequeno);
+    padding: var(--espacio-3);
   }
   .destinations {
-    padding-block: 24px;
+    padding-block: var(--espacio-5);
   }
   .destinations > div {
-    gap: 8px 22px;
+    gap: var(--espacio-2) 22px;
   }
   .destinations button {
-    font-size: 0.75rem;
+    font-size: var(--texto-pequeno);
   }
   .section {
     padding-block: 46px;
   }
   .heading {
     display: block;
-    margin-bottom: 24px;
+    margin-bottom: var(--espacio-5);
   }
   h2 {
     font-size: 2rem;
@@ -754,18 +789,18 @@ dialog input {
   .filter-row {
     flex-direction: column;
     align-items: start;
-    margin-top: 24px;
-    gap: 12px;
+    margin-top: var(--espacio-5);
+    gap: var(--espacio-3);
   }
   .filters {
     gap: 6px;
   }
   .filters button {
-    padding: 9px 12px;
-    font-size: 0.75rem;
+    padding: 9px var(--espacio-3);
+    font-size: var(--texto-pequeno);
   }
   .grid {
-    gap: 28px;
+    gap: calc(var(--separacion-tarjetas) + 6px);
   }
   .card h3 {
     font-size: 1.3125rem;
@@ -789,14 +824,14 @@ dialog input {
   }
   .footer-top > a {
     max-width: 140px;
-    font-size: 0.75rem;
+    font-size: var(--texto-pequeno);
     line-height: 1.7;
   }
   .footer-bottom {
-    font-size: 0.75rem;
+    font-size: var(--texto-pequeno);
   }
   .footer-top p {
-    font-size: 0.75rem;
+    font-size: var(--texto-pequeno);
   }
   dialog {
     padding: 28px 22px;
@@ -814,4 +849,19 @@ dialog input {
   .card:hover img {
     transform: none;
   }
+}
+
+/* El layout adapta encabezado, contenido y pie en todas las rutas. */
+.site-layout { min-height: 100dvh; display: flex; flex-direction: column; }
+.site-layout > main { flex: 1; min-width: 0; }
+.site-header { background: var(--color-pie); color: var(--color-superficie); padding-bottom: var(--espacio-5); }
+.site-header--home { position: absolute; inset: 0 0 auto; background: transparent; padding-bottom: 0; }
+.hero { padding-top: 70px; }
+.page-intro { margin-bottom: var(--espacio-6); }
+.page-intro h1 { font-size: clamp(2rem, 5vw, 3.5rem); text-align: left; margin-bottom: var(--espacio-5); }
+.page-content { min-width: 0; }
+.page-content .search { border: 1px solid var(--color-borde); }
+.navigation nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; }
+@media (max-width: 40rem) {
+  .hero { padding-top: 100px; }
 }

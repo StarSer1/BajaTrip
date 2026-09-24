@@ -2,7 +2,7 @@
 
 Desarrollamos la página de inicio de BajaTrip para mostrar experiencias turísticas de Baja California Sur. Podemos filtrarlas por destino y categoría, desplegar su descripción y consultar sus detalles. Incluimos una simulación para elegir fecha y viajeros; todavía no guardamos reservas ni realizamos cobros.
 
-Abrimos `frontend/index.html` para probarla. Los estilos están en `frontend/assets/css/landing.css` y los datos e interacciones en `frontend/assets/js/landing.js`. Las fotografías y fuentes externas requieren internet.
+Ejecutamos `npm ci` y `npm run dev` desde la raíz para probarla. Los estilos y las variables están en `frontend/assets/css/landing.css`; los datos en `frontend/src/data/experiences.js` y las interacciones en los componentes y hooks de `frontend/src/`. Las fotografías y fuentes externas requieren internet. La [guía de demostración](docs/demostracion-unidad-1.md) explica el layout React, la reutilización y cómo agregar vistas.
 
 ## Propiedades que utilizamos
 

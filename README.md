@@ -1,31 +1,49 @@
 # BajaTrip
-Proyecto de una plataforma de servicios turísticos en Baja California Sur.
 
-Estructura inicial del proyecto y tarjeta de experiencia turística animada de la práctica 1.
+Frontend en React para explorar experiencias turísticas de Baja California Sur. La portada conserva su diseño, filtros por destino y categoría, detalles desplegables, animaciones y simulación de reserva por fecha y viajeros. El catálogo comparte el layout y la tarjeta de experiencia.
 
-<<<<<<< Updated upstream
-Abre `frontend/index.html` en el navegador y selecciona **Explorar experiencias** o **Catálogo**. La tarjeta está integrada en `frontend/pages/catalogo.html`, con estilos propios en `frontend/assets/css/components/tarjeta-experiencia.css` y estilos compartidos en `frontend/assets/css/global.css`.
-=======
-## Primera página
+## Ejecutar
 
-La portada incluye un diseño adaptable a móvil con buscador por destino y categoría, seis experiencias de ejemplo y un panel de detalles. Abre `frontend/index.html` para probarlo; no requiere instalar dependencias. Los estilos están en `frontend/assets/css/landing.css` y las interacciones en `frontend/assets/js/landing.js`.
+Necesitas Node.js 22.12 o posterior y npm. Desde la raíz del repositorio:
 
-Las reservas son una demostración local: permiten elegir fecha y viajeros, pero no guardan ni envían solicitudes ni procesan pagos. Para contratar servicios reales falta conectar prestadores, disponibilidad, precios y un sistema de reservas. Las fotografías son ilustrativas y se cargan desde Unsplash; las fuentes se cargan desde Google Fonts y requieren conexión.
+```sh
+npm ci
+npm run dev
+```
 
-La primera página es `frontend/index.html`. Ahí se encuentra la portada de BajaTrip con:
+Abre la dirección que indique Vite, normalmente `http://localhost:5173`. Ya no se abre el HTML con doble clic ni con Live Server: JSX necesita el servidor de desarrollo. Para probar en un celular conectado a la misma red, utiliza la dirección **Network** que muestra Vite; el equipo debe permitir ese puerto en su firewall.
 
-- el nombre y la identidad del proyecto;
-- una introducción a la plataforma y a las experiencias de Baja California Sur;
-- el enlace **Explorar experiencias**, que lleva al catálogo;
-- el enlace **Catálogo** en la navegación principal.
+```sh
+npm run build      # Compila el sitio en dist/
+npm run preview    # Sirve la compilación localmente
+```
 
-Desde cualquiera de esos enlaces se llega a `frontend/pages/catalogo.html`, donde está integrada la tarjeta de experiencia de la práctica. No es un archivo independiente: se accede a ella navegando desde la portada del sitio.
+En producción publica `dist/` y configura el hosting para devolver `index.html` cuando la URL no corresponda a un archivo. React Router utiliza rutas como `/catalogo`. Los enlaces antiguos `/index.html` y `/pages/catalogo.html` se redirigen dentro de la aplicación.
 
-Abre `frontend/index.html` en el navegador y selecciona **Explorar experiencias** o **Catálogo**. La tarjeta utiliza los colores y la tipografía definidos en `frontend/assets/css/global.css`, además de sus estilos propios en `frontend/assets/css/components/tarjeta-experiencia.css`.
->>>>>>> Stashed changes
+## Dónde trabajar
 
-El componente utiliza `article`, `figure`, `figcaption`, encabezados, `dl` y `details`/`summary`. Incluye transformaciones 2D y 3D, transiciones con `:hover` y `:focus`, una animación de tres pasos y una variante de movimiento reducido, sin JavaScript.
+| Pieza | Archivo |
+| --- | --- |
+| Paleta, espaciado, tipografía y responsividad | `frontend/assets/css/landing.css` (variables al principio) |
+| Encabezado, navegación y pie compartidos | `frontend/src/components/Layout.jsx` |
+| Tarjeta reutilizable | `frontend/src/components/ExperienceCard.jsx` |
+| Lista generada con `map` y claves estables | `frontend/src/components/ExperienceGrid.jsx` |
+| Arreglo de las seis experiencias | `frontend/src/data/experiences.js` |
+| Experiencia ilustrada del catálogo original | `frontend/src/data/catalogExamples.js` |
+| Filtros y selección de viajeros | `frontend/src/hooks/useExperiences.js` |
+| Vistas y rutas | `frontend/src/pages/` y `frontend/src/App.jsx` |
 
-Consulta [LEEME.md](LEEME.md) para leer el informe de implementación de la tarjeta, su compatibilidad según Baseline y la justificación de las propiedades animadas.
+Consulta la [guía de demostración de las prácticas 2 y 3](docs/demostracion-unidad-1.md), el [informe comparativo de media cuartilla](docs/informe-comparativo.md), la [estructura del proyecto](docs/estructura.md) y las [notas de responsividad y animación](LEEME.md).
 
-Consulta [la guía de estructura](docs/estructura.md) para conocer la función de cada carpeta, las pantallas previstas y su relación con los requisitos de `Fundamentacion del Proyecto.pdf`.
+## Verificación
+
+```sh
+npx playwright install chromium
+npm test
+```
+
+Las pruebas recorren búsqueda combinada, categorías, destinos sin resultados, reinicio, viajeros, cálculo de precio, fechas inválidas y válidas, cierre del diálogo, catálogo, rutas antiguas, cambios de variables, movimiento reducido y anchos de 320 a 1440 px.
+
+Las reservas siguen siendo una demostración local: no se guardan ni envían solicitudes y no se realizan cobros. Autenticación, paneles, backend y modo sin conexión siguen pendientes; los antiguos archivos vacíos no representaban funciones implementadas. Las fotografías de Unsplash y las fuentes de Google requieren conexión.
+
+La configuración usa [React con una herramienta de compilación](https://react.dev/learn/build-a-react-app-from-scratch) y [Vite](https://vite.dev/guide/). Las versiones resueltas se guardan en `package-lock.json`.

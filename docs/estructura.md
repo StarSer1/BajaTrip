@@ -1,121 +1,66 @@
-# Estructura inicial de BajaTrip
+# Estructura de BajaTrip
 
-Esta organización se basa en los puntos 2 a 5 de `Fundamentacion del Proyecto.pdf`. Inicialmente se crearon archivos vacíos. Ahora el inicio, el catálogo y sus estilos contienen la base de una tarjeta de experiencia para los puntos 1 y 2 de la práctica 1; los demás archivos de implementación siguen vacíos. No hay dependencias ni configuración de ejecución. Los archivos `.gitkeep` permiten guardar carpetas vacías en Git.
-
-Se proponen HTML, CSS y JavaScript para organizar la parte del navegador. El lenguaje y el framework del servidor, la base de datos y los proveedores de captcha y notificaciones quedan por definir; el documento no los exige.
-
-## Carpetas principales
+El frontend implementado utiliza React, React Router y Vite. La portada y el catálogo son vistas de una aplicación; el backend y la base de datos conservan sus carpetas de planeación. La migración sustituye los HTML y módulos JavaScript vacíos por una estructura preparada para componentes y vistas React.
 
 ```text
 BajaTrip/
-├── Fundamentacion del Proyecto.pdf
-├── README.md
-├── docs/
-│   ├── estructura.md
-│   └── diseno/
+├── package.json / package-lock.json
+├── vite.config.js
+├── playwright.config.js
 ├── frontend/
-│   ├── index.html
-│   ├── service-worker.js
-│   ├── pages/
-│   │   ├── catalogo.html
-│   │   ├── detalle-servicio.html
-│   │   ├── sin-conexion.html
-│   │   ├── auth/
-│   │   ├── turista/
-│   │   ├── prestador/
-│   │   └── admin/
-│   └── assets/
-│       ├── css/
-│       ├── images/
-│       ├── icons/
-│       └── js/
-│           ├── app.js
-│           ├── modules/
-│           └── offline/
-├── backend/
-│   ├── config/
-│   ├── middleware/
-│   ├── shared/
-│   └── modules/
-├── database/
-│   ├── schema/
-│   ├── migrations/
-│   └── seeds/
-└── tests/
-    ├── frontend/
-    ├── backend/
-    └── integracion/
+│   ├── index.html                # Entrada mínima; monta src/main.jsx
+│   ├── assets/
+│   │   ├── css/landing.css        # Variables y estilos compartidos responsivos
+│   │   └── images/bahia.svg       # Ilustración del catálogo original
+│   └── src/
+│       ├── main.jsx               # Montaje de React y carga de estilos
+│       ├── App.jsx                # Rutas bajo el Layout común
+│       ├── components/
+│       │   ├── Layout.jsx
+│       │   ├── ExperienceCard.jsx
+│       │   ├── ExperienceGrid.jsx
+│       │   ├── ExperienceSearch.jsx
+│       │   ├── ExperienceResults.jsx
+│       │   ├── ExperienceDialog.jsx
+│       │   └── LandingStory.jsx
+│       ├── data/                  # Arreglos de experiencias ilustrativas
+│       ├── hooks/useExperiences.js
+│       ├── utils/format.js
+│       └── pages/                 # HomePage, CatalogPage, NotFoundPage
+├── backend/                       # Servidor por implementar
+├── database/                      # Esquema, migraciones y datos por implementar
+├── tests/frontend/                # Pruebas de comportamiento con Playwright
+└── docs/                          # Guía de demostración e informe comparativo
 ```
 
-## Pantallas y archivos del navegador
+## Flujo actual
 
-Todas las rutas de esta sección parten de `frontend/`.
+`main.jsx` monta `App`. Las rutas de `App` comparten `Layout`, que coloca las vistas en `Outlet`. Inicio y catálogo usan el mismo buscador, listado, diálogo y hook. El hook filtra el arreglo de datos; `ExperienceGrid` genera una `ExperienceCard` por elemento. Los cambios de estado actualizan React sin construir HTML con `innerHTML` ni instalar eventos sobre tarjetas recién creadas.
 
-| Ubicación | Uso previsto |
+| Ruta | Comportamiento |
 | --- | --- |
-| `index.html` | Inicio de la plataforma. |
-| `pages/catalogo.html` | Búsqueda y filtros por municipio y categoría. |
-| `pages/detalle-servicio.html` | Descripción, precio, galería responsiva, disponibilidad y reseñas. |
-| `pages/auth/registro.html`, `login.html` | Registro de turistas y prestadores con captcha e inicio de sesión. |
-| `pages/turista/nueva-reserva.html` | Selección de fecha y número de personas. |
-| `pages/turista/mis-reservas.html`, `detalle-reserva.html` | Historial, confirmación y estado actualizado de la reserva. |
-| `pages/turista/resena.html` | Formulario para dejar una reseña. |
-| `pages/prestador/panel.html`, `mis-servicios.html` | Resumen del prestador y sus publicaciones. |
-| `pages/prestador/formulario-servicio.html` | Publicación y edición de servicios con fotos, descripción y precio. |
-| `pages/prestador/disponibilidad.html`, `reservas.html` | Disponibilidad por fecha y gestión y confirmación de reservas recibidas. |
-| `pages/admin/panel.html`, `prestadores.html` | Resumen administrativo y aprobación de prestadores nuevos. |
-| `pages/admin/moderacion.html`, `estadisticas.html` | Moderación y gráficos por municipio, mes y temporada. |
-| `pages/sin-conexion.html` | Pantalla para recursos que todavía no estén guardados en el dispositivo. |
-| `assets/css/global.css`, `responsive.css` | Estilos comunes y adaptación a tamaños de pantalla. |
-| `assets/images/`, `assets/icons/` | Imágenes e iconos de la interfaz. Las fotos subidas por prestadores se gestionarán desde el servidor. |
-| `assets/js/app.js` | Inicialización común del navegador. |
-| `assets/js/modules/` | Archivos separados para catálogo, galería, autenticación, captcha, reservas, servicios, disponibilidad, reseñas, administración, gráficos y notificaciones. |
-| `assets/js/offline/almacenamiento.js` | Catálogo consultado, reservas guardadas y operaciones pendientes en almacenamiento local del navegador. |
-| `assets/js/offline/sincronizacion.js` | Envío de reservas pendientes cuando regrese la conexión y manejo de su resultado. |
-| `service-worker.js` | Disponibilidad sin conexión de los recursos de la web. |
+| `/` | Portada, destinos, filtros, seis ejemplos, historia y pasos. |
+| `/catalogo` | Catálogo con búsqueda y la experiencia ilustrada original. |
+| `/index.html`, `/pages/catalogo.html` | Compatibilidad con enlaces anteriores mediante redirecciones React. |
+| Cualquier ruta no registrada | Vista de página no encontrada dentro del Layout. |
 
-## Servidor
+`ExperienceDialog` conserva una simulación local por fecha y viajeros. No crea reservas, no consulta cupos ni realiza cobros. El hosting debe reenviar rutas de aplicación a `index.html`. Las fotografías y fuentes externas requieren conexión.
 
-`backend/config/` alojará la configuración; `middleware/`, la autenticación, los permisos por rol y validaciones comunes; `shared/`, las utilidades compartidas.
+## Alcance futuro del proyecto
 
-Cada carpeta de `backend/modules/` representa una responsabilidad. Cuando se elija la tecnología, dentro de cada módulo se agregarán los archivos de rutas, validación, lógica y acceso a datos necesarios.
+La fundamentación original sigue siendo la referencia del producto. Estas funciones todavía no están implementadas; sus antiguos archivos estaban vacíos. Las futuras pantallas se crearán dentro de `src/pages/` y se registrarán en `App.jsx`, compartiendo componentes y estilos.
 
-| Módulo | Responsabilidad prevista |
+| Área | Pantallas y responsabilidades previstas |
 | --- | --- |
-| `auth` | Registro, inicio de sesión y verificación del captcha en el servidor. |
-| `usuarios` | Perfiles y roles de turista, prestador y administrador; acceso público para visitantes. |
-| `municipios`, `categorias` | Datos para organizar y filtrar el catálogo de los cinco municipios de BCS. |
-| `servicios` | Publicar, consultar y editar servicios turísticos. |
-| `archivos` | Validación, carga y referencia de fotografías. |
-| `disponibilidad` | Fechas y cupos disponibles para cada servicio. |
-| `reservas` | Crear reservas, consultar historial, confirmar y actualizar estados, verificando disponibilidad para evitar sobreventa. |
-| `resenas` | Registrar y consultar opiniones de turistas. |
-| `notificaciones` | Confirmación al turista, avisos inmediatos al prestador y cambios de estado en tiempo real. El canal de confirmación queda por definir. |
-| `administracion` | Aprobar prestadores y moderar contenido. |
-| `estadisticas` | Datos agregados de reservas por municipio, mes y temporada. |
-| `sincronizacion` | Recibir reservas pendientes, evitar duplicados y resolver conflictos de disponibilidad al recuperar internet. |
+| Servicios | Detalle, galería, disponibilidad y reseñas de cada servicio. |
+| Autenticación | Registro de turista o prestador, login y captcha. |
+| Turista | Nueva reserva, historial, detalle, confirmaciones y reseñas. |
+| Prestador | Panel, publicación y edición de servicios, disponibilidad y gestión de reservas. |
+| Administración | Aprobación de prestadores, moderación y estadísticas por municipio y temporada. |
+| Sin conexión | Recursos guardados, solicitudes pendientes y sincronización posterior. |
 
-Una reserva creada sin conexión se considerará pendiente de sincronización hasta que el servidor valide disponibilidad. Guardarla en el navegador no garantiza su confirmación.
+El lenguaje y framework del servidor siguen por definir. `backend/config`, `middleware` y `shared` alojarán configuración, permisos y utilidades. Los módulos previstos son autenticación, usuarios, municipios, categorías, servicios, archivos, disponibilidad, reservas, reseñas, notificaciones, administración, estadísticas y sincronización. `database/schema`, `migrations` y `seeds` alojarán el modelo y sus cambios versionados.
 
-## Datos, diseño y verificación futura
+El servidor deberá validar disponibilidad, evitar duplicados y resolver conflictos. Una solicitud guardada sin conexión será pendiente hasta que el servidor la confirme. Según el alcance original no se incluyen pagos en línea, aplicación móvil nativa, facturación electrónica ni traducciones.
 
-- `database/schema/`: futuro modelo de usuarios, municipios, categorías, servicios, fotos, disponibilidad, reservas, reseñas y notificaciones.
-- `database/migrations/`: cambios versionados de la estructura de datos.
-- `database/seeds/`: datos iniciales, incluidos los cinco municipios y categorías de servicios.
-- `docs/diseno/`: diagramas, modelo de datos y bocetos de pantallas.
-- `tests/frontend/`, `tests/backend/` y `tests/integracion/`: espacio para futuras pruebas de interfaz, servidor y flujos completos, especialmente reservas, sincronización y permisos.
-
-## Correspondencia con el documento
-
-| Punto del PDF | Ubicación principal |
-| --- | --- |
-| 2. Usuarios del sistema | Pantallas públicas y carpetas `auth`, `turista`, `prestador`, `admin`; módulos `usuarios` y `administracion`. |
-| 3. Requerimientos funcionales | Pantallas y módulos de catálogo, autenticación, reservas, disponibilidad, fotos, notificaciones, sincronización y estadísticas. |
-| 4. Galería de imágenes | Detalle del servicio, módulo `galeria.js` y estilos responsivos. |
-| 4. Funcionar sin conexión y datos en el navegador | `service-worker.js` y `assets/js/offline/`. |
-| 4. Gráficos | Pantalla administrativa de estadísticas, `graficos.js` y módulo de estadísticas del servidor. |
-| 4. Tiempo real | `notificaciones.js` y módulo de notificaciones del servidor. |
-| 4. Registro, login y captcha | Pantallas de autenticación, `auth.js`, `captcha.js` y módulo `auth` del servidor. |
-| 5. Alcance | Catálogo de cinco municipios, cuentas, reservas, modo sin conexión y panel administrativo. |
-
-Según el alcance del PDF, no se contemplan pagos en línea, aplicación móvil nativa, facturación electrónica ni traducciones.
+Para ampliar la interfaz durante la evaluación consulta [demostracion-unidad-1.md](demostracion-unidad-1.md). El argumento sobre framework y diseño está en [informe-comparativo.md](informe-comparativo.md).
