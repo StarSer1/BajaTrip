@@ -49,12 +49,14 @@ test('navegación, catálogo, enlaces antiguos y contenido original', async ({ p
   await page.getByRole('link', { name: 'Explorar experiencias en el catálogo' }).click();
   await expect(page).toHaveURL(/\/catalogo$/);
   await expect(page.getByRole('heading', { name: 'Catálogo de experiencias', exact: true })).toBeVisible();
-  await expect(page.locator('main .card')).toHaveCount(7);
+  await expect(page.locator('main .card')).toHaveCount(6);
+  await page.getByRole('link', { name: 'Galería', exact: true }).click();
+  await expect(page).toHaveURL(/\/galeria$/);
   const original = page.getByRole('article', { name: 'Un día junto al mar en La Paz', exact: true });
   await original.locator('summary').click();
   await expect(original.getByText('El itinerario, el precio y la disponibilidad se mostrarán cuando el prestador publique el servicio.')).toBeVisible();
   await page.reload();
-  await expect(page.locator('main .card')).toHaveCount(7);
+  await expect(page.locator('main .card')).toHaveCount(1);
   await page.getByRole('link', { name: 'Destinos', exact: true }).click();
   await expect(page).toHaveURL(/\/#destinos$/);
   await expect(page.locator('#destinos')).toBeInViewport();
@@ -96,6 +98,81 @@ test('la aplicación arranca sin errores de React', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.card')).toHaveCount(6);
   await page.getByRole('link', { name: 'Explorar experiencias en el catálogo' }).click();
-  await expect(page.locator('.card')).toHaveCount(7);
+  await expect(page.locator('.card')).toHaveCount(6);
+  for (const name of ['Galería', 'Mis viajes']) await page.getByRole('link', { name, exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Mis viajes', level: 1 })).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test('el menú llega a las cuatro páginas sin desbordar en tres anchos', async ({ page }) => {
+  const pages = [['Inicio', 'BAJA SUR'], ['Catálogo', 'Catálogo de experiencias'], ['Galería', 'Galería'], ['Mis viajes', 'Mis viajes']];
+  await page.goto('/');
+  for (const [link, heading] of pages) {
+    await page.getByRole('navigation', { name: 'Navegación principal' }).getByRole('link', { name: link, exact: true }).click();
+    await expect(page.getByRole('heading', { name: heading, level: 1, exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: link, exact: true })).toHaveAttribute('aria-current', 'page');
+    for (const width of [320, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    }
+  }
+});
+
+test('galería: ampliación accesible y variante de movimiento reducido', async ({ page }) => {
+  await page.goto('/galeria');
+  await expect(page.locator('.gallery img')).toHaveCount(6);
+  expect(await page.locator('.gallery__figure').first().evaluate((el) => getComputedStyle(el).animationName)).toBe('entrada-experiencia');
+  const trigger = page.getByRole('button', { name: 'Ampliar fotografía: El Arco desde el mar' });
+  await trigger.click();
+  await expect(page.getByRole('dialog', { name: 'El Arco desde el mar' })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  expect(await page.locator('.gallery__figure').first().evaluate((el) => getComputedStyle(el).animationName)).toBe('none');
+  await trigger.focus();
+  expect(await trigger.evaluate((el) => getComputedStyle(el).transform)).toBe('none');
+});
+
+test('favoritos en localStorage sobreviven a cerrar la página', async ({ page }) => {
+  await page.goto('/');
+  const save = page.getByRole('button', { name: 'Guardar Kayak en el mar de Cortés en favoritos' });
+  await save.click();
+  await expect(save).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('link', { name: /^Mis viajes\s*, 1 favorito$/ })).toBeVisible();
+  await page.goto('/mis-viajes');
+  await page.reload();
+  await expect(page.getByRole('article', { name: 'Kayak en el mar de Cortés' })).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('bajatrip:favoritos'))).toBe('["kayak"]');
+  await page.getByRole('button', { name: 'Guardar Kayak en el mar de Cortés en favoritos' }).click();
+  await expect(page.getByText('Aún no guardas favoritos')).toBeVisible();
+});
+
+test('la búsqueda en sessionStorage se conserva al recargar y al cambiar de vista', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('¿A dónde vamos?').selectOption('La Paz');
+  await page.getByLabel('Viajeros', { exact: false }).selectOption('4');
+  await page.getByRole('button', { name: 'Explorar experiencias', exact: true }).click();
+  await page.reload();
+  await expect(page.locator('#count')).toHaveText('2 experiencias en La Paz');
+  await page.getByRole('link', { name: 'Catálogo', exact: true }).click();
+  await expect(page.locator('#travelers')).toHaveValue('4');
+  await expect(page.locator('#count')).toHaveText('2 experiencias en La Paz');
+});
+
+test('las reservas de ejemplo se guardan en IndexedDB y se pueden eliminar', async ({ page }) => {
+  await page.goto('/catalogo');
+  await page.getByRole('button', { name: 'Ver detalles de Balandra, sin prisa', exact: true }).click();
+  await page.getByLabel('Fecha de tu aventura').fill('2099-03-14');
+  await page.getByRole('button', { name: 'Probar reserva de ejemplo' }).click();
+  await expect(page.getByRole('dialog').getByRole('status')).toContainText('La guardamos en Mis viajes');
+  await page.getByRole('dialog').getByRole('link', { name: 'Ver Mis viajes' }).click();
+  await expect(page.getByRole('heading', { name: 'Mis viajes', level: 1 })).toBeVisible();
+  await page.reload();
+  const item = page.locator('.trip-list li');
+  await expect(item).toHaveCount(1);
+  await expect(item).toContainText('14 de marzo de 2099');
+  await expect(item).toContainText('$1,700 MXN');
+  await page.getByRole('button', { name: /Eliminar reserva de ejemplo: Balandra/ }).click();
+  await expect(page.getByText('Sin reservas de ejemplo')).toBeVisible();
 });

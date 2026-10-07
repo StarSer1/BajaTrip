@@ -4,7 +4,7 @@
   --color-marca: #174f47;
   --color-marca-hover: #286b5c;
   --color-texto: #203a34;
-  --color-secundario: #7a877c;
+  --color-secundario: #5c685e; /* 4.9:1 o más sobre todos los fondos (WCAG AA), corregido tras la auditoría Lighthouse. */
   --color-fondo: #fbfbf8;
   --color-superficie: #ffffff;
   --color-borde: #dce2d8;
@@ -284,7 +284,7 @@ h2 {
   border: 1px solid var(--color-borde);
   border-radius: 24px;
   background: none;
-  color: #536355;
+  color: var(--color-secundario);
   font-size: var(--texto-pequeno);
 }
 .filters button[aria-pressed="true"] {
@@ -369,7 +369,9 @@ h2 {
   flex-direction: column;
   animation: entrada-experiencia 700ms ease-out both;
 }
-.tarjeta-experiencia__contenido:focus-within {
+.tarjeta-experiencia__contenido:has(:focus-visible) {
+  /* Solo con foco de teclado: con el ratón, quitar la animación a mitad del clic
+     movía la tarjeta entre mousedown y mouseup y el clic se perdía. */
   animation: none;
 }
 .tarjeta-experiencia h3 {
@@ -623,7 +625,8 @@ footer {
   font-size: var(--texto-pequeno);
   color: #b8ccc0;
 }
-#empty {
+#empty,
+.empty-state {
   text-align: center;
   padding: 45px;
   background: var(--color-suave);
@@ -864,4 +867,201 @@ dialog input {
 .navigation nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; }
 @media (max-width: 40rem) {
   .hero { padding-top: 100px; }
+}
+
+/* Favoritos (localStorage): el corazón queda sobre la fotografía de cada tarjeta. */
+.favorite-button {
+  position: absolute;
+  top: var(--espacio-3);
+  right: var(--espacio-3);
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--color-superficie);
+  color: var(--color-acento);
+  font-size: 1.25rem;
+  line-height: 1;
+  box-shadow: 0 4px 14px #06262925;
+  transition: transform 200ms ease, background-color 200ms ease;
+}
+.favorite-button:hover {
+  transform: scale(1.08);
+}
+.favorite-button[aria-pressed="true"] {
+  background: var(--color-acento);
+  color: var(--color-superficie);
+}
+.nav-count {
+  font-weight: 700;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Galería (Práctica 1 integrada): transición, transformación 3D y entrada escalonada. */
+.gallery {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--espacio-6) var(--separacion-tarjetas);
+}
+.gallery__figure {
+  margin: 0;
+  perspective: 900px;
+  animation: entrada-experiencia 700ms ease-out both;
+  animation-delay: calc(var(--orden, 0) * 90ms);
+}
+.gallery__figure button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-suave);
+  transform-style: preserve-3d;
+  transition: transform 450ms ease, box-shadow 450ms ease;
+}
+.gallery__figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  transition: transform 600ms ease;
+}
+.gallery__figure button:focus-visible {
+  transform: rotateY(-8deg) rotateX(3deg) translateY(-6px);
+  box-shadow: 0 18px 40px #06262930;
+}
+.gallery__figure button:focus-visible img {
+  transform: scale(1.06);
+}
+@media (hover: hover) {
+  .gallery__figure button:hover {
+    transform: rotateY(-8deg) rotateX(3deg) translateY(-6px);
+    box-shadow: 0 18px 40px #06262930;
+  }
+  .gallery__figure button:hover img {
+    transform: scale(1.06);
+  }
+}
+.gallery__figure figcaption {
+  padding: var(--espacio-3) var(--espacio-1) 0;
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+}
+.gallery__figure figcaption span {
+  display: block;
+  margin-top: var(--espacio-1);
+  font-family: var(--fuente-cuerpo);
+  font-weight: 400;
+  font-size: var(--texto-pequeno);
+  color: var(--color-secundario);
+}
+.photo-dialog {
+  width: min(60rem, calc(100% - 32px));
+  padding: var(--espacio-7) var(--espacio-4) var(--espacio-4);
+  animation: abrir-foto 300ms ease-out;
+}
+.photo-dialog figure {
+  margin: 0;
+}
+.photo-dialog img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 75vh;
+  max-height: 75dvh;
+  object-fit: contain;
+  border-radius: var(--radio-control);
+}
+.photo-dialog figcaption {
+  margin-top: var(--espacio-3);
+  font-size: var(--texto-mediano);
+}
+@keyframes abrir-foto {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Sin giro ni escala: el foco sigue señalado con la sombra y el contorno. */
+  .gallery__figure button:hover,
+  .gallery__figure button:focus-visible,
+  .gallery__figure button:hover img,
+  .gallery__figure button:focus-visible img,
+  .favorite-button:hover {
+    transform: none;
+  }
+}
+
+/* Mis viajes: favoritos guardados y reservas de ejemplo (IndexedDB). */
+.storage-note {
+  font-size: var(--texto-pequeno);
+  color: var(--color-secundario);
+  margin: 0;
+}
+.trip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--espacio-4);
+}
+.trip-list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espacio-4);
+  padding: var(--espacio-5);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-tarjeta);
+}
+.trip-list h3 {
+  margin: 0 0 var(--espacio-3);
+  font-size: var(--texto-tarjeta);
+}
+.trip-list dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2) var(--espacio-5);
+  margin: 0;
+  font-size: var(--texto-control);
+}
+.trip-list dt {
+  color: var(--color-secundario);
+  font-size: var(--texto-pequeno);
+}
+.trip-list dd {
+  margin: 0;
+  font-weight: 600;
+}
+.button--secundario {
+  background: none;
+  color: var(--color-marca);
+  border: 1px solid var(--color-borde);
+}
+.button--secundario:hover {
+  background: var(--color-aviso);
+}
+.offline-notice {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 20;
+  margin: 0;
+  padding: var(--espacio-3) var(--margen-pagina);
+  background: var(--color-foco);
+  color: var(--color-texto);
+  font-size: var(--texto-control);
+  text-align: center;
 }

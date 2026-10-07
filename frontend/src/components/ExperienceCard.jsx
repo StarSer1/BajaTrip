@@ -1,16 +1,20 @@
 import { money } from '../utils/format.js';
+import { photoSrcSet, photoUrl } from '../utils/images.js';
+import FavoriteButton from './FavoriteButton.jsx';
 
 export default function ExperienceCard({ experience, onDetails }) {
   const t = experience;
-  const photo = (width) => `https://images.unsplash.com/${t.image}?auto=format&fit=crop&w=${width}&q=80`;
   return <article className="card tarjeta-experiencia" aria-labelledby={`titulo-${t.id}`}>
     <figure className="photo tarjeta-experiencia__imagen">
       <div className="tarjeta-experiencia__foto">
-        <img src={t.illustration || photo(800)}
-          srcSet={t.illustration ? undefined : `${photo(400)} 400w, ${photo(800)} 800w, ${photo(1200)} 1200w`}
+        <img src={t.illustration || photoUrl(t.image, 800)}
+          srcSet={t.illustration ? undefined : photoSrcSet(t.image, [400, 800, 1200])}
           sizes="auto, (max-width: 30rem) calc(100vw - 2.25rem), 440px"
           alt={t.imageAlt || `Fotografía ilustrativa: ${t.name}`} loading="lazy" width="800" height="600" />
-        {onDetails && <button className="details-button" onClick={() => onDetails(t)} aria-label={`Ver detalles de ${t.name}`}>Ver detalles</button>}
+        {onDetails && <>
+          <FavoriteButton experience={t} />
+          <button className="details-button" onClick={() => onDetails(t)} aria-label={`Ver detalles de ${t.name}`}>Ver detalles</button>
+        </>}
       </div>
       <figcaption>{t.caption || `${t.destination} · ${t.category}`}</figcaption>
     </figure>

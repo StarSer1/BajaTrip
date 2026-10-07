@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import useFavorites from '../hooks/useFavorites.js';
+import useOnline from '../hooks/useOnline.js';
 
 function Logo() {
   return <Link className="logo" to="/" aria-label="BajaTrip, inicio"><b className="symbol">≈</b> baja<b>trip</b><sup>®</sup></Link>;
@@ -8,6 +10,8 @@ function Logo() {
 export default function Layout() {
   const { pathname, hash } = useLocation();
   const home = pathname === '/';
+  const { ids } = useFavorites();
+  const online = useOnline();
   useEffect(() => {
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView();
     else window.scrollTo(0, 0);
@@ -19,11 +23,15 @@ export default function Layout() {
       <div className="wrap navigation">
         <Logo />
         <nav aria-label="Navegación principal">
-          {!home && <Link to="/">Inicio</Link>}
+          <NavLink to="/" end>Inicio</NavLink>
           <Link to="/#destinos">Destinos</Link>
-          <Link to="/#experiencias">Experiencias</Link>
+          <NavLink to="/catalogo">Catálogo</NavLink>
+          <NavLink to="/galeria">Galería</NavLink>
+          <NavLink to="/mis-viajes">Mis viajes{ids.length > 0 && <span className="nav-count">
+            <span aria-hidden="true"> ({ids.length})</span>
+            <span className="visually-hidden">, {ids.length} {ids.length === 1 ? 'favorito' : 'favoritos'}</span>
+          </span>}</NavLink>
           <Link to="/#como-funciona">Cómo funciona</Link>
-          {!home && <Link to="/catalogo" aria-current={pathname === '/catalogo' ? 'page' : undefined}>Catálogo</Link>}
         </nav>
         <Link className="nav-cta" to="/#experiencias">Encuentra tu aventura</Link>
       </div>
@@ -36,5 +44,6 @@ export default function Layout() {
       </div>
       <div className="wrap footer-bottom"><span>© 2026 BajaTrip</span><span>Hecho para explorar Baja California Sur.</span></div>
     </footer>
+    {!online && <p className="offline-notice" role="status">Sin conexión: algunas fotografías no cargarán. Tus favoritos y reservas de ejemplo siguen guardados en este dispositivo.</p>}
   </div>;
 }

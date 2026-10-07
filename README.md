@@ -1,6 +1,6 @@
 # BajaTrip
 
-Frontend en React para explorar experiencias turísticas de Baja California Sur. La portada conserva su diseño, filtros por destino y categoría, detalles desplegables, animaciones y simulación de reserva por fecha y viajeros. El catálogo comparte el layout y la tarjeta de experiencia.
+Frontend en React para explorar experiencias turísticas de Baja California Sur. Tiene cuatro páginas que comparten el mismo layout y se abren desde el menú: **Inicio** (buscador, destinos y experiencias), **Catálogo**, **Galería** (Práctica 1 integrada, con animaciones y variante de movimiento reducido) y **Mis viajes** (favoritos y reservas de ejemplo guardados en el navegador).
 
 ## Ejecutar
 
@@ -30,10 +30,17 @@ En producción publica `dist/` y configura el hosting para devolver `index.html`
 | Lista generada con `map` y claves estables | `frontend/src/components/ExperienceGrid.jsx` |
 | Arreglo de las seis experiencias | `frontend/src/data/experiences.js` |
 | Experiencia ilustrada del catálogo original | `frontend/src/data/catalogExamples.js` |
-| Filtros y selección de viajeros | `frontend/src/hooks/useExperiences.js` |
+| Filtros y selección de viajeros (se conservan en sessionStorage) | `frontend/src/hooks/useExperiences.js` y `useSessionState.js` |
+| Favoritos (localStorage) | `frontend/src/hooks/useFavorites.js` y `components/FavoriteButton.jsx` |
+| Reservas de ejemplo (IndexedDB) | `frontend/src/storage/reservations.js` |
+| Aviso sin conexión (`navigator.onLine`) | `frontend/src/hooks/useOnline.js` |
+| Galería y ampliación de fotos | `frontend/src/pages/GalleryPage.jsx` y `components/PhotoDialog.jsx` |
+| Imágenes adaptativas (`srcset`) | `frontend/src/utils/images.js` |
 | Vistas y rutas | `frontend/src/pages/` y `frontend/src/App.jsx` |
 
-Consulta la [guía de demostración de las prácticas 2 y 3](docs/demostracion-unidad-1.md), el [informe comparativo de media cuartilla](docs/informe-comparativo.md), la [estructura del proyecto](docs/estructura.md) y las [notas de responsividad y animación](LEEME.md).
+Consulta el [Avance 1: dónde está cada entregable y la auditoría de accesibilidad](docs/avance-1.md), la [Tarea 3: catálogo de componentes de HTML5](docs/tarea-3/tarea-3-catalogo-componentes-html5.pdf) ([guion de la exposición](docs/tarea-3/exposicion.md)), el [informe comparativo](docs/informe-comparativo.md) y las [notas de responsividad y animación](LEEME.md).
+
+Para regenerar el PDF de la Tarea 3 después de editar `docs/tarea-3/catalogo-componentes-html5.html`, ejecuta `npm run pdf:tarea3`.
 
 ## Verificación
 
@@ -42,8 +49,8 @@ npx playwright install chromium
 npm test
 ```
 
-Las pruebas recorren búsqueda combinada, categorías, destinos sin resultados, reinicio, viajeros, cálculo de precio, fechas inválidas y válidas, cierre del diálogo, catálogo, rutas antiguas, cambios de variables, movimiento reducido y anchos de 320 a 1440 px.
+Las pruebas recorren búsqueda combinada, categorías, destinos sin resultados, reinicio, viajeros, cálculo de precio, fechas inválidas y válidas, cierre del diálogo, las cuatro páginas desde el menú, la galería con y sin movimiento reducido, favoritos en localStorage, búsqueda en sessionStorage, reservas en IndexedDB, rutas antiguas, cambios de variables y anchos de 320 a 1440 px.
 
-Las reservas siguen siendo una demostración local: no se guardan ni envían solicitudes y no se realizan cobros. Autenticación, paneles, backend y modo sin conexión siguen pendientes; los antiguos archivos vacíos no representaban funciones implementadas. Las fotografías de Unsplash y las fuentes de Google requieren conexión.
+Las reservas siguen siendo una demostración local: se guardan solo en el navegador (IndexedDB), no se envían solicitudes y no se realizan cobros. Autenticación, paneles, backend y modo sin conexión siguen pendientes; los antiguos archivos vacíos no representaban funciones implementadas. Las fotografías de Unsplash y las fuentes de Google requieren conexión.
 
 La configuración usa [React con una herramienta de compilación](https://react.dev/learn/build-a-react-app-from-scratch) y [Vite](https://vite.dev/guide/). Las versiones resueltas se guardan en `package-lock.json`.

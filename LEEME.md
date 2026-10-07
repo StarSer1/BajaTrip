@@ -21,4 +21,12 @@ Organizamos la página con `header`, `nav`, `main`, `section` y `footer`. Cada e
 
 Conservamos las transiciones y animaciones de las tarjetas. El giro usa `transform`, `perspective`, `transform-style` y `backface-visibility`. La entrada tiene tres pasos con `@keyframes` y conserva su estado final con `animation-fill-mode: both`. Animamos `transform` y `opacity`, mostramos el foco y desactivamos el movimiento con `prefers-reduced-motion` en el inicio.
 
+## Galería y almacenamiento en el navegador
+
+La página **Galería** integra la Práctica 1. Las postales entran escalonadas con `@keyframes`, giran en 3D con `perspective` y `transform` al pasar el cursor o al recibir el foco, y se amplían en un `dialog`. Con `prefers-reduced-motion` quitamos las animaciones y los giros, y conservamos el foco visible.
+
+**Mis viajes** usa tres componentes de HTML5. `localStorage` guarda los favoritos aunque se cierre el navegador. `sessionStorage` conserva la búsqueda mientras la pestaña siga abierta. `IndexedDB` guarda las reservas de ejemplo como registros. `navigator.onLine` muestra un aviso cuando se pierde la conexión. El detalle está en el [catálogo de componentes](docs/tarea-3/tarea-3-catalogo-componentes-html5.pdf).
+
+La auditoría de Lighthouse nos marcó poco contraste en `--color-secundario`; lo corregimos cambiando solo esa variable. Más detalle en el [Avance 1](docs/avance-1.md).
+
 Consultamos [MDN sobre contenedores](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries) y el [estándar HTML sobre imágenes](https://html.spec.whatwg.org/multipage/images.html). Nos apoyamos en IA para revisar el código, ajustar la responsividad y redactar este resumen.
