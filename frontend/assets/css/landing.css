@@ -13,6 +13,7 @@
   --color-pie: #123e38;
   --color-foco: #eaa65b;
   --color-acento: #b97443;
+  --color-peligro: #9b2c2c;
   --fuente-cuerpo: "DM Sans", sans-serif;
   --fuente-titulos: Manrope, sans-serif;
   --texto-base: 1rem;
@@ -1064,4 +1065,284 @@ dialog input {
   color: var(--color-texto);
   font-size: var(--texto-control);
   text-align: center;
+}
+
+/* Guías locales (Práctica 4): registro, gráfico y catálogo guardados en IndexedDB. */
+.button--peligro {
+  background: var(--color-peligro);
+}
+.button--peligro:hover {
+  background: #7d2020;
+}
+.guides-notice {
+  margin-bottom: var(--espacio-5);
+}
+.guides-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: var(--espacio-5);
+  align-items: start;
+}
+.guides-panel {
+  min-width: 0;
+  padding: var(--espacio-5);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-tarjeta);
+}
+.guides-panel h2,
+.guides-results h2 {
+  font-size: 1.625rem;
+  margin-bottom: var(--espacio-5);
+}
+.guides-results h2:focus {
+  outline: none;
+}
+.guide-form__fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: var(--espacio-4);
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  min-width: 0;
+  font-size: var(--texto-control);
+  font-weight: 600;
+}
+.field--wide {
+  grid-column: 1 / -1;
+}
+.field input:not([type="checkbox"]),
+.field select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 1px solid #bdc9ba;
+  border-radius: 6px;
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font-weight: 400;
+}
+.field small {
+  color: var(--color-secundario);
+  font-size: var(--texto-pequeno);
+  font-weight: 400;
+}
+.checks {
+  flex-flow: row wrap;
+  gap: var(--espacio-2) var(--espacio-4);
+  margin: 0;
+  padding: var(--espacio-3) var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+}
+.checks legend {
+  padding: 0 var(--espacio-1);
+}
+.checks label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-height: 2.75rem;
+  font-weight: 400;
+}
+.checks input {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--color-marca);
+}
+.photo-field label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+.photo-field img {
+  width: 6rem;
+  height: 6rem;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.guide-form__actions,
+.confirm-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-3);
+  margin-top: var(--espacio-5);
+}
+.form-error {
+  margin: var(--espacio-4) 0 0;
+  color: var(--color-peligro);
+  font-size: var(--texto-mediano);
+}
+.guides-search {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  border: 1px solid var(--color-borde);
+  box-shadow: none;
+}
+.guides-count {
+  margin: var(--espacio-5) 0 var(--espacio-4);
+  font-size: var(--texto-control);
+}
+.guides-count span {
+  color: var(--color-secundario);
+}
+.guides-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  gap: var(--separacion-tarjetas);
+}
+.guide-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-tarjeta);
+}
+.guide-card__photo {
+  aspect-ratio: 4 / 3;
+  background: var(--color-suave);
+}
+.guide-card__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.guide-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--espacio-4) 18px 20px;
+}
+.guide-card h3 {
+  margin: 0 0 var(--espacio-1);
+  font-size: var(--texto-tarjeta);
+}
+.guide-card__meta {
+  margin-bottom: var(--espacio-3);
+  color: var(--color-secundario);
+  font-size: var(--texto-control);
+}
+.guide-card dl {
+  display: grid;
+  gap: var(--espacio-2);
+  margin: 0 0 var(--espacio-4);
+  font-size: var(--texto-control);
+}
+.guide-card dt {
+  color: var(--color-secundario);
+  font-size: var(--texto-pequeno);
+}
+.guide-card dd {
+  margin: 0;
+}
+.guide-card dd a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.guide-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+  margin-top: auto;
+}
+.guide-card__actions .button {
+  flex: 1;
+  padding: var(--espacio-3);
+}
+.confirm-dialog h2 {
+  font-size: 1.5rem;
+  margin: 0 0 var(--espacio-4);
+}
+
+/* Gráfico SVG: una sola serie con el color de marca; texto con las variables de texto. */
+.guides-chart {
+  margin: 0;
+}
+.guides-chart figcaption {
+  margin-bottom: var(--espacio-4);
+  font-weight: 600;
+}
+.guides-chart figcaption span {
+  display: block;
+  margin-top: var(--espacio-1);
+  color: var(--color-secundario);
+  font-size: var(--texto-control);
+  font-weight: 400;
+}
+.guides-chart__plot {
+  min-height: 12rem;
+}
+.guides-chart svg {
+  display: block;
+  overflow: visible;
+  font-size: var(--texto-control);
+}
+.guides-chart__tick line {
+  stroke: var(--color-borde);
+  stroke-width: 1;
+}
+.guides-chart__tick text {
+  fill: var(--color-secundario);
+  font-size: var(--texto-pequeno);
+  font-variant-numeric: tabular-nums;
+}
+.guides-chart__baseline {
+  stroke: var(--color-secundario);
+  stroke-width: 1;
+}
+.guides-chart__hit {
+  fill: transparent;
+}
+.guides-chart__bar {
+  fill: var(--color-marca);
+}
+.guides-chart__row:hover .guides-chart__bar {
+  fill: var(--color-marca-hover);
+}
+.guides-chart__row:hover .guides-chart__hit {
+  fill: var(--color-suave);
+}
+.guides-chart__label {
+  fill: var(--color-texto);
+}
+.guides-chart__value {
+  fill: var(--color-texto);
+  font-weight: 600;
+}
+.guides-chart__table {
+  margin-top: var(--espacio-4);
+  font-size: var(--texto-control);
+}
+.guides-chart__table summary {
+  padding: var(--espacio-2) 0;
+  color: var(--color-marca-hover);
+  font-weight: 700;
+  cursor: pointer;
+}
+.guides-chart__table table {
+  width: 100%;
+  margin-top: var(--espacio-2);
+  border-collapse: collapse;
+}
+.guides-chart__table th,
+.guides-chart__table td {
+  padding: var(--espacio-2);
+  border-bottom: 1px solid var(--color-borde);
+  text-align: left;
+}
+.guides-chart__table td {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+summary:focus-visible {
+  outline: 3px solid var(--color-foco);
+  outline-offset: 4px;
 }

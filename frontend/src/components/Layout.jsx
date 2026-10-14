@@ -31,6 +31,7 @@ export default function Layout() {
             <span aria-hidden="true"> ({ids.length})</span>
             <span className="visually-hidden">, {ids.length} {ids.length === 1 ? 'favorito' : 'favoritos'}</span>
           </span>}</NavLink>
+          <NavLink to="/guias">Guías</NavLink>
           <Link to="/#como-funciona">Cómo funciona</Link>
         </nav>
         <Link className="nav-cta" to="/#experiencias">Encuentra tu aventura</Link>
@@ -44,6 +45,6 @@ export default function Layout() {
       </div>
       <div className="wrap footer-bottom"><span>© 2026 BajaTrip</span><span>Hecho para explorar Baja California Sur.</span></div>
     </footer>
-    {!online && <p className="offline-notice" role="status">Sin conexión: algunas fotografías no cargarán. Tus favoritos y reservas de ejemplo siguen guardados en este dispositivo.</p>}
+    {!online && <p className="offline-notice" role="status">Sin conexión: algunas fotografías no cargarán. Tus favoritos, reservas de ejemplo y el catálogo de guías siguen disponibles en este dispositivo.</p>}
   </div>;
 }
