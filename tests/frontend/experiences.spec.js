@@ -104,8 +104,8 @@ test('la aplicación arranca sin errores de React', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test('el menú llega a las cuatro páginas sin desbordar en tres anchos', async ({ page }) => {
-  const pages = [['Inicio', 'BAJA SUR'], ['Catálogo', 'Catálogo de experiencias'], ['Galería', 'Galería'], ['Mis viajes', 'Mis viajes']];
+test('el menú llega a las cinco páginas sin desbordar en tres anchos', async ({ page }) => {
+  const pages = [['Inicio', 'BAJA SUR'], ['Catálogo', 'Catálogo de experiencias'], ['Galería', 'Galería'], ['Mis viajes', 'Mis viajes'], ['Guías', 'Guías locales']];
   await page.goto('/');
   for (const [link, heading] of pages) {
     await page.getByRole('navigation', { name: 'Navegación principal' }).getByRole('link', { name: link, exact: true }).click();

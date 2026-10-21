@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage.jsx';
 import CatalogPage from './pages/CatalogPage.jsx';
 import GalleryPage from './pages/GalleryPage.jsx';
 import TripsPage from './pages/TripsPage.jsx';
+import GuidesPage from './guides/GuidesPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 
 const titles = {
@@ -12,6 +13,7 @@ const titles = {
   '/catalogo': 'Catálogo de experiencias | BajaTrip',
   '/galeria': 'Galería | BajaTrip',
   '/mis-viajes': 'Mis viajes | BajaTrip',
+  '/guias': 'Guías locales | BajaTrip',
 };
 
 export default function App() {
@@ -25,6 +27,7 @@ export default function App() {
       <Route path="catalogo" element={<CatalogPage />} />
       <Route path="galeria" element={<GalleryPage />} />
       <Route path="mis-viajes" element={<TripsPage />} />
+      <Route path="guias" element={<GuidesPage />} />
       <Route path="index.html" element={<Navigate to={`/${hash}`} replace />} />
       <Route path="pages/catalogo.html" element={<Navigate to="/catalogo" replace />} />
       <Route path="*" element={<NotFoundPage />} />

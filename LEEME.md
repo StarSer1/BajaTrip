@@ -1,15 +1,40 @@
-# Práctica 1: animación de una tarjeta de experiencia en BajaTrip
+# Práctica 4: catálogo de guías locales
 
-Para esta práctica se trabajó con la tarjeta de experiencia del catálogo de BajaTrip. Se puede encontrar entrando a la página principal y seleccionando **Explorar experiencias**. La tarjeta conserva los colores y la tipografía del proyecto, y sus estilos están en `frontend/assets/css/components/tarjeta-experiencia.css`. La intención fue darle movimiento sin dificultar la lectura ni cambiar la estructura que ya tenía.
+Para esta práctica tomamos la entidad de nuestro proyecto que corresponde al personal: las personas guías que acompañan las experiencias de BajaTrip. El catálogo está en la ruta `/guias`; su código se encuentra en `frontend/src/guides/` y el service worker en `frontend/sw.js`. Las notas de las entregas anteriores se trasladaron a [docs/unidad-1](docs/unidad-1/notas-responsividad.md).
 
-El contenido se organiza con `article`, `figure`, `figcaption` y una lista descriptiva `dl`. Para desplegar la información se utilizan `details` y `summary`, que permiten abrir y cerrar el apartado con teclado sin programar esa interacción en JavaScript. Estos elementos tienen soporte amplio [MDN clasifica `details` como Baseline Widely available](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) para su funcionamiento básico.
+**Cómo probarlo:** `npm run build` y `npm run preview`, abrir `http://localhost:4173/guias` y, desde las herramientas del navegador (Red › Sin conexión), desactivar la red. El service worker solo se registra en la versión compilada.
 
-Baseline sirve para identificar qué tan disponible está una característica en los principales navegadores. Las funciones utilizadas tienen el estado **Widely available** según las fichas de MDN consultadas el 9 de septiembre de 2026. Esto permite usarlas en navegadores actuales, aunque no asegura que funcionen en todas las versiones antiguas.
+## Esquema de la base
 
-La transformación 2D se realiza con [`transform`](https://developer.mozilla.org/en-US/docs/Web/CSS/transform): `translateY(-6px)` levanta ligeramente la tarjeta al pasar el cursor. Para el efecto 3D se aplica `rotateY(-16deg)` a la ilustración. Se combina con [`perspective`](https://developer.mozilla.org/en-US/docs/Web/CSS/perspective) de 900px, [`transform-style: preserve-3d`](https://developer.mozilla.org/en-US/docs/Web/CSS/transform-style) y [`backface-visibility: hidden`](https://developer.mozilla.org/en-US/docs/Web/CSS/backface-visibility). Estas propiedades cuentan con disponibilidad amplia. La perspectiva da profundidad y la última propiedad oculta el reverso, aunque el giro elegido es pequeño y no llega a mostrarlo.
+Base `bajatrip-guias`, almacén `guias`, con la clave `id` generada automáticamente.
 
-Las transiciones usan [`transition`](https://developer.mozilla.org/en-US/docs/Web/CSS/transition), también ampliamente disponible. Una responde a `:hover` y otra a [`:focus`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus), de modo que el teclado también activa una respuesta visual. La consulta [`hover`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/hover), con el mismo estado Baseline, limita el primer efecto a dispositivos compatibles. El selector [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) activa el giro al abrir los detalles; es ampliamente disponible a la fecha de consulta. Si un navegador antiguo no lo reconoce, se conserva la apertura del contenido, pero sin giro.
+| Campo | Tipo | Contenido |
+| --- | --- | --- |
+| `id` | número | Clave autoincremental |
+| `name` | texto | Nombre completo |
+| `specialty` | texto | Mar y playa, Aventura o Cultura y sabores |
+| `municipality` | texto | Uno de los cinco municipios de Baja California Sur |
+| `phone` / `email` | texto | Datos de contacto |
+| `startDate` | fecha | Fecha de ingreso; de ella sale la antigüedad |
+| `photo` | Blob | Fotografía en binario, reducida a 480 px con canvas |
+| `languages` | lista | Idiomas que habla (se agrega en la versión 2) |
 
-La entrada dura 700ms y utiliza [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes) con tres pasos: 0%, 60% y 100%. [`animation-fill-mode: both`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-fill-mode) mantiene el estado final visible. Ambas características tienen soporte amplio. También lo tienen [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion), que desactiva el movimiento cuando el usuario lo solicita, y los selectores [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) y [`:focus-within`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-within), empleados para señalar el foco y evitar que la entrada oculte el control enfocado.
+La **versión 1** crea el almacén y el índice `municipality`. La **versión 2** agrega `languages` con un índice *multiEntry* y, dentro de `onupgradeneeded`, recorre con un cursor los registros existentes para asignarles «Español» sin borrar ninguno. Para ver la migración se elimina la base desde Aplicación › IndexedDB, se abre `/guias?version=1`, se registran algunos guías y después se entra a `/guias`: la página informa cuántos registros se conservaron.
 
-Se animaron únicamente `transform` y [`opacity`](https://developer.mozilla.org/en-US/docs/Web/CSS/opacity), esta última también ampliamente disponible. Permiten mover visualmente el contenido y cambiar su transparencia sin recalcular su tamaño en cada 
+## Por qué indexamos el municipio
+
+En BajaTrip quien viaja elige primero su destino, y cada guía trabaja en un municipio; la pregunta natural es «¿quién me puede acompañar en Loreto?». Con el índice, `getAll('Loreto')` llega directamente a esos registros en lugar de leer todo el almacén y filtrar después. El mismo índice alimenta el gráfico, que responde **¿cuántos guías tenemos en cada municipio?** contando con `count()` los registros reales. El índice de idiomas permite además encontrar, por ejemplo, a quien habla inglés. Debajo del buscador indicamos qué índice resolvió cada consulta.
+
+## Estrategia de caché
+
+Escribimos el service worker sin librerías para poder explicar cada paso. Al compilar, Vite genera la lista de archivos (HTML, JavaScript y CSS) y el service worker los guarda durante la instalación. Después aplica una estrategia distinta según el recurso:
+
+- **Páginas, red primero:** con conexión se recibe el HTML más reciente; sin ella se entrega el `index.html` guardado y React Router muestra la vista solicitada.
+- **Archivos compilados, caché primero:** su nombre incluye un hash y nunca cambian, así que no tiene caso consultar la red.
+- **Fuentes de Google, copia guardada y actualización en segundo plano:** la página no espera a la red para mostrar el texto.
+
+No guardamos las fotografías de Unsplash del resto del sitio porque son pesadas y no forman parte del catálogo; las fotos de los guías no lo necesitan, ya que viven en IndexedDB. Cada compilación cambia la huella del service worker, de modo que la caché anterior se elimina al activarse la nueva.
+
+## Declaración de uso de IA
+
+Utilizamos asistentes de inteligencia artificial únicamente como apoyo en el diseño de la interfaz y para comprender el funcionamiento de algunos componentes, como los índices de IndexedDB y el ciclo de vida del service worker.
