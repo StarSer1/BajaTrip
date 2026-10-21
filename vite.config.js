@@ -29,4 +29,6 @@ export default defineConfig({
   root: 'frontend',
   plugins: [react(), serviceWorker()],
   build: { outDir: '../dist', emptyOutDir: true },
+  // En desarrollo, el chat se conecta al Worker local (npm run dev:worker, puerto 8787).
+  server: { proxy: { '/api': { target: 'http://localhost:8787', ws: true } } },
 });
