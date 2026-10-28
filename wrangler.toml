@@ -1,6 +1,19 @@
 name = "bajatrippp"
+main = "backend/worker/index.js"
 compatibility_date = "2026-10-19"
 
 [assets]
 directory = "./dist"
+binding = "ASSETS"
 not_found_handling = "single-page-application"
+# /api/* llega primero al Worker (WebSocket del chat); lo demás se sirve como archivo estático.
+run_worker_first = ["/api/*"]
+
+[[durable_objects.bindings]]
+name = "CHAT_ROOM"
+class_name = "ChatRoom"
+
+# Durable Object con almacenamiento SQLite (disponible también en el plan gratuito).
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ChatRoom"]

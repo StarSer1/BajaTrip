@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import useFavorites from '../hooks/useFavorites.js';
 import useOnline from '../hooks/useOnline.js';
+import ChatWidget from './ChatWidget.jsx';
 
 function Logo() {
   return <Link className="logo" to="/" aria-label="BajaTrip, inicio"><b className="symbol">≈</b> baja<b>trip</b><sup>®</sup></Link>;
@@ -45,6 +46,7 @@ export default function Layout() {
       </div>
       <div className="wrap footer-bottom"><span>© 2026 BajaTrip</span><span>Hecho para explorar Baja California Sur.</span></div>
     </footer>
+    <ChatWidget />
     {!online && <p className="offline-notice" role="status">Sin conexión: algunas fotografías no cargarán. Tus favoritos, reservas de ejemplo y el catálogo de guías siguen disponibles en este dispositivo.</p>}
   </div>;
 }
