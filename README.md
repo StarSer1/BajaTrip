@@ -42,7 +42,7 @@ En producción publica `dist/` y configura el hosting para devolver `index.html`
 | Service worker y su lista de precarga | `frontend/sw.js` y `vite.config.js` |
 | Vistas y rutas | `frontend/src/pages/` y `frontend/src/App.jsx` |
 
-Consulta el [Avance 1: dónde está cada entregable y la auditoría de accesibilidad](docs/avance-1.md), la [Tarea 3: catálogo de componentes de HTML5](docs/tarea-3/tarea-3-catalogo-componentes-html5.pdf) ([guion de la exposición](docs/tarea-3/exposicion.md)), el [informe comparativo](docs/informe-comparativo.md), las [notas de responsividad y animación](docs/unidad-1/notas-responsividad.md) y el [LEEME de la Práctica 4](LEEME.md).
+Consulta el [Avance 1: dónde está cada entregable y la auditoría de accesibilidad](docs/avance-1.md), la [Tarea 3: catálogo de componentes de HTML5](docs/tarea-3/tarea-3-catalogo-componentes-html5.pdf) ([guion de la exposición](docs/tarea-3/exposicion.md)), el [informe comparativo](docs/informe-comparativo.md), las [notas de responsividad y animación](docs/unidad-1/notas-responsividad.md), la [elección de algoritmos de balanceo de carga](docs/balanceo.md) y el [LEEME de la Práctica 4](LEEME.md).
 
 Para regenerar el PDF de la Tarea 3 después de editar `docs/tarea-3/catalogo-componentes-html5.html`, ejecuta `npm run pdf:tarea3`.
 
