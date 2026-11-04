@@ -1010,6 +1010,22 @@ dialog input {
   color: var(--color-secundario);
   margin: 0;
 }
+/* Solo aparece con el backend balanceado: qué nodo atendió y la sesión compartida. */
+.server-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  margin: 0 0 var(--espacio-4);
+  padding: var(--espacio-3) var(--espacio-4);
+  background: var(--color-aviso);
+  border-radius: var(--radio-control);
+  font-size: var(--texto-control);
+}
+.server-note p {
+  margin: 0;
+}
 .trip-list {
   list-style: none;
   margin: 0;

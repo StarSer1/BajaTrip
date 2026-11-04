@@ -1,0 +1,8 @@
+# A la imagen solo entra lo que el nodo necesita: ni .env, ni .git, ni node_modules.
+*
+!package.json
+!package-lock.json
+!backend
+!database/schema
+!frontend/src/data/experiences.js
+!dist

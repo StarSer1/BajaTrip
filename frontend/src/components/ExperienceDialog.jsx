@@ -16,8 +16,9 @@ export default function ExperienceDialog({ experience: t, travelers, onClose }) 
     if (!form.reportValidity()) return;
     const summary = `Tu selección de ejemplo: ${t.name}, ${longDate(field.value)}, ${people(travelers)}. No se envió ninguna solicitud.`;
     try {
-      await saveReservation({ experienceId: t.id, name: t.name, destination: t.destination, date: field.value, travelers, total: t.price * travelers });
-      setResult({ text: `${summary} La guardamos en Mis viajes, solo en este navegador.`, saved: true });
+      const saved = await saveReservation({ experienceId: t.id, name: t.name, destination: t.destination, date: field.value, travelers, total: t.price * travelers });
+      const where = saved.servidor === 'guardada' ? 'en este navegador y en el servidor de BajaTrip' : 'solo en este navegador';
+      setResult({ text: `${summary} La guardamos en Mis viajes, ${where}.`, saved: true });
     } catch {
       setResult({ text: `${summary} Este navegador no permitió guardarla.`, saved: false });
     }
