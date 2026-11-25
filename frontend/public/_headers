@@ -1,0 +1,10 @@
+# Cabeceras de seguridad para la versión publicada en Cloudflare (npm run deploy).
+# Son las mismas que pone el balanceador en nginx/templates/default.conf.template.
+# Cloudflare ya sirve todo por HTTPS y redirige http:// a https://.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://images.unsplash.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  X-Frame-Options: DENY

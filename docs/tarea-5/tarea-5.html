@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Tarea 5 · Propuesta integral de seguridad de BajaTrip</title>
+<style>
+  @page { size: Letter; margin: 2.2cm 2.3cm; }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #1f2937; font-size: 11pt; line-height: 1.4; margin: 0; text-align: justify; }
+  h1, h2, h3 { color: #1e3a5f; text-align: left; }
+  h2 { font-size: 14pt; border-bottom: 2px solid #dbe3ee; padding-bottom: 3px; margin: 20px 0 8px; break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 12px 0 4px; break-after: avoid; }
+  p { margin: 5px 0 7px; }
+  ul, ol { margin: 4px 0 8px; padding-left: 22px; }
+  li { margin: 2px 0; }
+  code { font-family: Consolas, monospace; font-size: 9.3pt; background: #eef2f7; padding: 0 3px; border-radius: 3px; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 9.3pt; text-align: left; line-height: 1.3; }
+  tr { break-inside: avoid; }
+  th { background: #1e3a5f; color: #fff; padding: 5px 6px; font-weight: 600; }
+  td { border-bottom: 1px solid #dbe3ee; padding: 4px 6px; vertical-align: top; }
+  .portada { height: 22.5cm; display: flex; flex-direction: column; justify-content: center; text-align: center; page-break-after: always; }
+  .portada .inst { font-size: 12pt; color: #4b5563; text-transform: uppercase; letter-spacing: .5px; }
+  .portada h1 { font-size: 24pt; margin: 34px 0 8px; }
+  .portada .sub { font-size: 13pt; color: #374151; }
+  .portada .autores { margin-top: 70px; font-size: 12pt; line-height: 1.8; }
+  .portada .fecha { margin-top: 40px; color: #4b5563; }
+  .recorrido { counter-reset: paso; list-style: none; padding-left: 0; }
+  .recorrido li { counter-increment: paso; position: relative; padding: 5px 8px 5px 34px; margin: 0; border-left: 3px solid #1e3a5f; break-inside: avoid; }
+  .recorrido li::before { content: counter(paso); position: absolute; left: 8px; top: 5px; width: 18px; height: 18px; border-radius: 50%; background: #1e3a5f; color: #fff; font-size: 8.5pt; text-align: center; line-height: 18px; font-weight: 700; }
+  .nota { background: #f3f6fa; border-left: 4px solid #1e3a5f; padding: 6px 10px; margin: 8px 0; break-inside: avoid; }
+  .refs li { margin: 3px 0; text-align: left; font-size: 10pt; }
+</style>
+</head>
+<body>
+
+<section class="portada">
+  <div class="inst">Ingeniería en Sistemas Computacionales<br>Aplicaciones Web II</div>
+  <h1>Tarea 5<br>Propuesta integral de seguridad</h1>
+  <div class="sub">BajaTrip: experiencias turísticas en Baja California Sur</div>
+  <div class="autores">Brandon Israel Nuñez Montoya<br>David Alejandro De Los Santos Cruz</div>
+  <div class="fecha">25 de noviembre de 2026</div>
+</section>
+
+<p>Este documento explica las decisiones de seguridad de BajaTrip tal como está hoy: un frontend en React, un balanceador Nginx con HTTPS, dos nodos de Node.js y una base MySQL compartida, todo en Docker. La Práctica 6 es el código; aquí está la razón de cada medida, de lo que dejamos fuera y de qué haríamos si algo saliera mal. El punto de partida fue nuestro inventario de superficies de ataque (<code>docs/superficies.md</code>).</p>
+
+<h2>1. Qué se protege</h2>
+<p>Clasificamos la información por el daño que causaría si se filtrara, se alterara o se perdiera. No todo merece el mismo cuidado: proteger igual el catálogo público que las contraseñas solo reparte el esfuerzo donde no hace falta.</p>
+<table>
+  <tr><th style="width:15%">Sensibilidad</th><th style="width:37%">Información</th><th>Por qué</th></tr>
+  <tr><td><strong>Crítica</strong></td><td>Contraseñas; tokens de sesión; llave privada del certificado y de nuestra CA local; secretos de <code>.env</code> (contraseña de MySQL y secret de Turnstile).</td><td>Con cualquiera de ellos alguien se hace pasar por un usuario, por el sitio o por el propio servidor. Además, mucha gente repite su contraseña en otros servicios.</td></tr>
+  <tr><td><strong>Alta</strong></td><td>Correo y nombre de cada cuenta; foto de perfil; reservas con fecha, destino y número de viajeros.</td><td>Son datos personales. Las reservas dicen cuándo una persona estará fuera de casa y dónde.</td></tr>
+  <tr><td><strong>Media</strong></td><td>Bitácora (IP y eventos); datos de guías en <code>/guias</code> (viven solo en el navegador, en IndexedDB).</td><td>Sirven para perfilar a alguien. La bitácora también sirve para investigar un incidente, así que no debe alterarse.</td></tr>
+  <tr><td><strong>Baja</strong></td><td>Catálogo de experiencias, precios ilustrativos, galería, favoritos.</td><td>Ya son públicos. Lo que importa es su integridad (que nadie cambie un precio) y que el sitio esté disponible.</td></tr>
+</table>
+<p>De esta tabla salen dos reglas que usamos en todo el diseño. <strong>Lo crítico nunca se guarda en claro</strong>: las contraseñas se guardan derivadas con bcrypt, y de los tokens solo queda su huella SHA-256. <strong>Lo alto solo lo ve su dueño</strong>: cada consulta lleva el filtro de a quién pertenece el dato.</p>
+
+<h2>2. De qué se protege</h2>
+<p>Nuestras amenazas no vienen de una lista genérica, sino de las entradas reales del sistema y de cómo se usa BajaTrip. Los turistas se conectan desde el wifi de hoteles, aeropuertos y tours, redes compartidas donde todos salen por la misma IP y cualquiera en la misma red puede escuchar. Las personas que nos preocupan son tres: un <strong>programa automático</strong> que prueba contraseñas o crea cuentas por miles, un <strong>usuario curioso</strong> que cambia el número de la dirección para ver qué pasa, y <strong>alguien en la misma red</strong> que intercepta el tráfico.</p>
+<table>
+  <tr><th style="width:27%">Amenaza</th><th style="width:28%">Dónde (superficie)</th><th style="width:10%">OWASP</th><th>Qué pasaría</th></tr>
+  <tr><td>Ver o borrar lo ajeno cambiando un id</td><td><code>GET/DELETE /api/reservas/{id}</code>, <code>/admin</code></td><td>A01</td><td>Alguien conoce los viajes de otra persona o se los borra.</td></tr>
+  <tr><td>Adivinar contraseñas o probar listas filtradas</td><td><code>POST /api/auth/entrar</code></td><td>A07</td><td>Toma de cuentas, sobre todo de quien repite contraseña.</td></tr>
+  <tr><td>Saber qué correos tienen cuenta</td><td>Mensajes de login y registro</td><td>A07</td><td>La lista se usa para dirigir ataques o correos falsos.</td></tr>
+  <tr><td>Cuentas creadas por bots</td><td><code>POST /api/auth/registro</code></td><td>A07</td><td>Spam, base de datos inflada, abuso de recursos.</td></tr>
+  <tr><td>Robo de la cookie de sesión</td><td>Wifi abierto; script inyectado</td><td>A04, A05</td><td>El atacante entra como la víctima sin conocer su contraseña.</td></tr>
+  <tr><td>Script inyectado (XSS)</td><td>Nombre de usuario, chat, guías</td><td>A05</td><td>Código ajeno corriendo en la página de todos.</td></tr>
+  <tr><td>Manipular el precio</td><td><code>POST /api/reservas</code>, IndexedDB editable</td><td>A08</td><td>Una reserva de $1.</td></tr>
+  <tr><td>Subir un programa disfrazado de foto</td><td><code>PUT /api/cuenta/foto</code></td><td>A05, A06</td><td>El servidor ejecuta código ajeno o lo sirve a otros.</td></tr>
+  <tr><td>Petición desde otro sitio (CSRF)</td><td>Cualquier POST/DELETE</td><td>A01</td><td>Otra página borra reservas usando la sesión del visitante.</td></tr>
+  <tr><td>Fingir ser el balanceador</td><td>Cabeceras <code>X-Real-IP</code> y <code>X-Forwarded-Proto</code></td><td>A01, A07</td><td>Saltarse el límite por IP o engañar sobre HTTPS.</td></tr>
+  <tr><td>Configuración de desarrollo en producción</td><td>Servidor, repositorio, dependencias</td><td>A02, A03</td><td>Errores con detalles internos, secretos en Git, paquetes vulnerables.</td></tr>
+</table>
+<p>Dejamos fuera de alcance los ataques de denegación de servicio a gran escala y un atacante con acceso físico al equipo. Contra el primero no basta un solo balanceador; del segundo se encarga el sistema operativo.</p>
+
+<h2>3. El recorrido de un dato sensible</h2>
+<p>Seguimos la <strong>contraseña</strong>, el dato más crítico, desde que se escribe hasta que regresa una respuesta. En cada paso anotamos qué la protege.</p>
+<ol class="recorrido">
+  <li><strong>Formulario</strong> (<code>/registro</code> o <code>/entrar</code>). Es un campo <code>type="password"</code> con <code>autocomplete</code> correcto para que el gestor de contraseñas ayude. El navegador revisa largo y formato solo para orientar: esa validación no protege nada.</li>
+  <li><strong>Del navegador al balanceador.</strong> Viaja dentro de TLS 1.2 o 1.3. Si alguien escribe <code>http://</code>, recibe un 301 a HTTPS, y HSTS hace que en las visitas siguientes el navegador ni lo intente. En el wifi del hotel solo se ve tráfico cifrado.</li>
+  <li><strong>Balanceador.</strong> Aquí termina TLS. Nginx limita el ritmo de <code>/api/auth/</code> por IP, agrega <code>X-Real-IP</code> y <code>X-Forwarded-Proto</code> y elige un nodo. No registra cuerpos de peticiones: la contraseña no queda en ningún log de Nginx.</li>
+  <li><strong>Red interna.</strong> Del balanceador al nodo, por <code>bajatrip-red</code>, una red privada de Docker sin acceso desde afuera (justificado en la Tarea 4).</li>
+  <li><strong>Nodo, antes de tocar la contraseña.</strong> Si el <code>Origin</code> es de otro sitio, se rechaza; se exige JSON de hasta 10 KB; se valida el correo; se revisa el límite de intentos en MySQL (5 por cuenta y 20 por IP). Si se pasa, responde 429 sin siquiera comparar la contraseña.</li>
+  <li><strong>Comparación.</strong> <code>bcrypt.compare</code> contra el hash guardado. Si el correo no existe, se compara contra un hash falso para que la respuesta tarde lo mismo. En cualquier fallo, la respuesta es la misma: «Correo o contraseña incorrectos.».</li>
+  <li><strong>Base de datos.</strong> En el registro se guarda <code>$2b$12$…</code>: el algoritmo, el costo (2<sup>12</sup> rondas, unos 250 ms por intento), una sal al azar de 128 bits y el hash. La contraseña nunca llega a la base.</li>
+  <li><strong>Bitácora.</strong> Se escribe <code>entrar-fallido</code> con la IP y el correo enmascarado (<code>m***@gmail.com</code>). Ni la contraseña ni el correo completo aparecen jamás.</li>
+  <li><strong>De regreso.</strong> La contraseña ya no se usa. Al entrar, el servidor crea un token nuevo de 256 bits al azar y lo manda en la cookie <code>bt_sesion</code> con <code>HttpOnly</code> (JavaScript no la lee), <code>Secure</code> (solo por HTTPS) y <code>SameSite=Lax</code>. En la tabla <code>sesiones</code> solo queda la huella SHA-256 del token: con una copia de la base no se puede usar ninguna sesión. La sesión anónima anterior se borra, para que un token conocido antes del login no sirva después.</li>
+  <li><strong>Al salir.</strong> La sesión se borra en el servidor. Aunque alguien hubiera copiado la cookie, ya no corresponde a nada.</li>
+</ol>
+<p>La <strong>foto de perfil</strong> sigue un camino parecido con otros controles. Nginx y el nodo cortan a los 2 MB; el tipo se decide por los primeros bytes del archivo y no por su nombre; se guarda con un nombre UUID en un volumen fuera del sitio público, compartido por los dos nodos; y se devuelve solo a su dueño, con <code>nosniff</code> y una CSP <code>sandbox</code> que impide ejecutar cualquier cosa que trajera escondida.</p>
+
+<h2>4. Las medidas</h2>
+<p>Cada medida está en el código y se comprueba con una prueba automática (<code>npm run test:seguridad</code>, 15 de 15 pasan) y con una demostración en el navegador. El detalle con capturas está en <code>docs/practica-6/lista-verificacion.md</code>.</p>
+<table>
+  <tr><th style="width:20%">Amenaza</th><th style="width:30%">Medida</th><th style="width:22%">Dónde está</th><th>Cómo se comprueba</th></tr>
+  <tr><td>Base de datos filtrada</td><td>bcrypt con costo 12 y sal; tokens guardados como huella SHA-256</td><td><code>auth/cuentas.js</code>, <code>auth/sesion.js</code></td><td><code>SELECT contrasena_hash</code> muestra <code>$2b$12$…</code></td></tr>
+  <tr><td>Saber qué correos existen</td><td>Mismo mensaje y mismo tiempo en el login; el registro responde igual</td><td><code>auth/cuentas.js</code></td><td>Correo inexistente y contraseña mala dan el mismo 401</td></tr>
+  <tr><td>Bots en el registro</td><td>Turnstile verificado en el servidor (falla cerrado) y campo trampa</td><td><code>auth/captcha.js</code>, <code>RegisterPage.jsx</code></td><td>Sin token: 400. El campo trampa no crea cuenta</td></tr>
+  <tr><td>Fuerza bruta</td><td>5 fallos por cuenta y 20 por IP en 15 min, en MySQL; <code>limit_req</code> en Nginx</td><td><code>auth/limite.js</code>, plantilla de Nginx</td><td>Sexto intento: 429 con <code>Retry-After</code>, aunque la contraseña sea buena</td></tr>
+  <tr><td>Robo o fijación de sesión</td><td>Cookie HttpOnly, Secure y SameSite; token nuevo al entrar; cierre en el servidor</td><td><code>auth/sesion.js</code></td><td>F12 › Cookies; la cookie copiada deja de servir al salir</td></tr>
+  <tr><td>Inyección SQL</td><td>Todas las consultas con <code>pool.execute</code> y <code>?</code></td><td><code>shared/db.js</code> y módulos</td><td><code>' OR '1'='1</code> no inicia sesión</td></tr>
+  <tr><td>Datos fuera de regla, precio alterado, XSS</td><td>Validación en el servidor; total recalculado; React muestra texto, sin <code>innerHTML</code></td><td><code>shared/validar.js</code>, <code>reservas.js</code></td><td>Nombre con <code>&lt;img onerror&gt;</code>: 400. <code>total: 1</code> se ignora</td></tr>
+  <tr><td>Ver lo ajeno (IDOR)</td><td>Filtro de dueño en toda consulta; 404 igual para lo ajeno y lo inexistente; rol revisado en cada petición</td><td><code>reservas.js</code> (<code>dueno()</code>), <code>server.js</code></td><td>La cuenta B abre la reserva de A: «No encontramos esa reserva». <code>/admin</code>: 403</td></tr>
+  <tr><td>Archivo malicioso</td><td>Tipo por contenido, 2 MB, nombre UUID, fuera de <code>dist/</code>, solo para el dueño, <code>sandbox</code></td><td><code>usuarios/foto.js</code></td><td>Un PHP con nombre <code>.jpg</code>: 415. El volumen solo tiene UUID</td></tr>
+  <tr><td>Ataque sin rastro</td><td>Bitácora JSON de cada fallo, sin contraseñas y con el correo enmascarado</td><td><code>shared/http.js</code></td><td><code>docker compose logs app1 app2</code></td></tr>
+  <tr><td>Escuchar en el wifi</td><td>HTTPS con 301 desde HTTP; TLS 1.2/1.3; HSTS</td><td>Plantilla de Nginx</td><td><code>curl -I http://…</code> responde 301; candado</td></tr>
+  <tr><td>Navegador sin instrucciones</td><td>CSP, HSTS, nosniff, Referrer-Policy y Permissions-Policy</td><td>Plantilla de Nginx, <code>_headers</code></td><td>F12 › Red › Encabezados</td></tr>
+  <tr><td>Script inyectado</td><td>CSP sin <code>'unsafe-inline'</code>, con reporte a la bitácora</td><td>Plantilla de Nginx, <code>demo-csp.html</code></td><td>El script de la demo no corre; aparece <code>csp-bloqueo</code></td></tr>
+  <tr><td>Configuración de desarrollo</td><td><code>NODE_ENV=production</code>, errores genéricos, <code>server_tokens off</code>, <code>.env</code> fuera de Git, <code>npm audit</code> en 0</td><td><code>Dockerfile</code>, <code>server.js</code></td><td>JSON roto: mensaje sin pila. <code>git log -- .env</code> vacío</td></tr>
+  <tr><td>CSRF</td><td>SameSite, JSON obligatorio y rechazo de <code>Origin</code> ajeno</td><td><code>server.js</code> (<code>mismoOrigen</code>)</td><td>POST con <code>Origin</code> de otro sitio: 403</td></tr>
+</table>
+
+<h2>5. Lo que decidimos NO hacer, y por qué</h2>
+<p>Cada medida tiene un costo: tiempo, complejidad, fricción para el turista o algo más que mantener. Estas son las que dejamos fuera a propósito.</p>
+<ul>
+  <li><strong>Bloquear la cuenta de forma permanente.</strong> Sería más fácil de explicar, pero cualquiera podría dejar sin acceso a otra persona con solo equivocarse cinco veces usando su correo. Elegimos un bloqueo de 15 minutos: frena a un programa que prueba miles de contraseñas y apenas afecta a quien de verdad se equivocó.</li>
+  <li><strong>Solo un límite por IP.</strong> Lo descartamos porque en el wifi de un hotel todos los huéspedes salen por la misma dirección: un huésped que falla bloquearía a los demás. Por eso hay dos contadores, por cuenta (5) y por IP (20, más alto).</li>
+  <li><strong>Captcha en el inicio de sesión.</strong> Le quita tiempo a todos y a veces le cierra el paso a quien usa lector de pantalla. En el login ya está el límite de intentos; el captcha solo está en el registro, el formulario público que un bot sí aprovecharía.</li>
+  <li><strong>Verificación de correo y recuperación de contraseña.</strong> Necesitan un servicio de correo con su propio dominio y su propia configuración. Hoy alguien podría registrar un correo que no es suyo, pero como BajaTrip no le manda nada a ese correo, no tiene consecuencias para el dueño real. Es lo primero que agregaríamos.</li>
+  <li><strong>Segundo factor (2FA).</strong> BajaTrip no cobra ni guarda medios de pago. Para turistas, el costo en fricción es mayor que el beneficio. Sí lo pondríamos para las cuentas de administrador cuando exista el panel completo.</li>
+  <li><strong>Cifrar el tramo balanceador–nodos.</strong> La red interna es privada y está dentro de un mismo equipo; cifrarla duplicaría certificados y renovaciones sin protegernos de nada real hoy. Si los nodos pasaran a máquinas en una red compartida, sí lo haríamos.</li>
+  <li><strong>Reprocesar las fotos</strong> (volver a codificarlas y quitar metadatos como la ubicación GPS). La librería para hacerlo (<code>sharp</code>) instala código nativo, y nuestra imagen instala dependencias con <code>--ignore-scripts</code> para no ejecutar scripts de terceros. Preferimos esa protección de la cadena de suministro. El riesgo queda acotado porque la foto solo la ve su dueño. Si las fotos fueran públicas, esta decisión cambiaría.</li>
+  <li><strong>HSTS con <code>includeSubDomains</code> y <code>preload</code>.</strong> Un error con esas opciones deja el sitio inaccesible durante meses y no controlamos todavía todos los subdominios.</li>
+  <li><strong>Cifrar los correos en la base.</strong> El correo es la llave para iniciar sesión y se busca en cada login. Cifrarlo obliga a manejar otra llave y un índice aparte. Lo cubrimos con permisos de la base y con el volumen privado.</li>
+  <li><strong>Alertas automáticas.</strong> La bitácora registra todo lo necesario, pero hoy alguien tiene que revisarla. Un sistema que avise ante muchos <code>entrar-bloqueado</code> seguidos es el siguiente paso para cubrir A09 por completo.</li>
+  <li><strong>Ocultar <code>X-Nodo</code>.</strong> Revela IPs internas, pero lo dejamos porque es la evidencia del reparto de la Práctica 5. En producción se quitaría.</li>
+</ul>
+
+<h2>6. Qué haríamos si hubiera una brecha</h2>
+<p>Suponemos el peor caso realista: alguien obtuvo una copia de la base de datos. Seguiríamos cinco pasos, en este orden.</p>
+<ol>
+  <li><strong>Detectar y confirmar.</strong> Revisar en la bitácora los eventos fuera de lo normal: muchos <code>entrar-bloqueado</code>, <code>reserva-ajena-o-inexistente</code> en serie, <code>error-interno</code> repetidos o <code>csp-bloqueo</code> en páginas que no son la demo. Guardar una copia de la bitácora antes de tocar nada: es la evidencia.</li>
+  <li><strong>Contener.</strong> Cerrar todas las sesiones con <code>DELETE FROM sesiones</code> (todos tienen que volver a entrar). Cambiar la contraseña de MySQL y el secret de Turnstile en <code>.env</code> y reiniciar los nodos. Si la llave del certificado pudo salir, revocarlo con <code>certbot revoke</code> y emitir otro. Si la falla está en una ruta, apagarla en Nginx mientras se corrige.</li>
+  <li><strong>Evaluar el daño.</strong> Las contraseñas están con bcrypt de costo 12: cada intento cuesta unos 250 ms, así que las contraseñas débiles sí podrían caer con tiempo, pero las frases largas no. Los tokens de sesión no sirven, porque solo están sus huellas. Lo que sí quedó expuesto: nombres, correos y fechas de viaje.</li>
+  <li><strong>Avisar.</strong> La Ley Federal de Protección de Datos Personales en Posesión de los Particulares (DOF, 20 de marzo de 2025) obliga a informar a los titulares sobre las vulneraciones que afecten de forma significativa sus derechos. Mandaríamos un mensaje claro: qué pasó, qué datos se vieron, que cambien su contraseña en BajaTrip y en cualquier sitio donde usen la misma, y que desconfíen de correos que digan ser de nosotros.</li>
+  <li><strong>Recuperar y aprender.</strong> Corregir la causa y agregar una prueba en <code>tests/seguridad/</code> que la reproduzca, para que no regrese. Al reiniciar, obligar a cambiar contraseña en el siguiente inicio de sesión. Hoy no tenemos respaldos automáticos de la base: un respaldo diario cifrado y guardado fuera del servidor es parte de este plan, porque sin él una brecha que borre datos no tiene vuelta atrás.</li>
+</ol>
+
+<div class="nota"><strong>La decisión más difícil</strong> fue el límite de intentos. Un límite solo por IP castigaba a los huéspedes de un mismo hotel. Uno solo por cuenta dejaba probar una contraseña en miles de cuentas. Un bloqueo permanente dejaba que cualquiera bloqueara a otro. Y como tenemos dos nodos detrás de un balanceador, un contador en la memoria de cada nodo se podía esquivar repartiendo los intentos. La solución combina dos contadores con límites distintos, guardados en la base compartida y con una ventana de 15 minutos. Ahí se juntan lo que aprendimos de balanceo y de seguridad.</div>
+
+<h2>Fuentes</h2>
+<ul class="refs">
+  <li>OWASP Foundation (2025). <em>OWASP Top 10:2025</em>. https://owasp.org/Top10/2025/</li>
+  <li>OWASP Cheat Sheet Series. <em>Authentication</em>, <em>Password Storage</em>, <em>Session Management</em>, <em>File Upload</em> y <em>Content Security Policy</em>. https://cheatsheetseries.owasp.org/</li>
+  <li>Cloudflare. <em>Turnstile: Server-side validation</em> y <em>Testing</em>. https://developers.cloudflare.com/turnstile/</li>
+  <li>MDN Web Docs. <em>Set-Cookie</em>, <em>Content-Security-Policy</em> y <em>Strict-Transport-Security</em>. https://developer.mozilla.org/</li>
+  <li>Hodges, J., Jackson, C. y Barth, A. (2012). <em>RFC 6797: HTTP Strict Transport Security</em>. IETF.</li>
+  <li>Cámara de Diputados (2025). <em>Ley Federal de Protección de Datos Personales en Posesión de los Particulares</em>, DOF 20/03/2025. https://www.diputados.gob.mx/LeyesBiblio/pdf/LFPDPPP.pdf</li>
+  <li>BajaTrip. <code>docs/superficies.md</code>, <code>docs/balanceo.md</code> y <code>docs/practica-6/lista-verificacion.md</code> (repositorio del proyecto).</li>
+</ul>
+
+</body>
+</html>

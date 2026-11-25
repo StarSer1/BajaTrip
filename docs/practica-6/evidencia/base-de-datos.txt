@@ -1,0 +1,13 @@
+$ SELECT id, correo, rol, contrasena_hash FROM usuarios LIMIT 5
+id	correo	rol	contrasena_hash
+1	hash***	turista	$2b$12$aJh1YIsg47NCtumrmW8G.euJxXx0j6P/YPmOAFVdIgTyeOHI6313W
+2	gene***	turista	$2b$12$R/MitspsC74xqQd1HCid8ebNgPsn9YuXnc1/8KePEsWPEmOoWJPmK
+4	otro***	turista	$2b$12$SfUtow8bKSTcs5NOGqSGCea4Mi.2UZkLxXPbj3CStKQQwmh.NI3zK
+5	limi***	turista	$2b$12$Oyx0NbEdcXCAz9oA6XnDx.blXH/MttNL1KPsmrpoKgeg7bL7rCvQ2
+6	cook***	turista	$2b$12$hWXDu6fG0rc9Y5KPSW1Nh.vlG99WBnMKXSSudZqLM6eQ3pQGfjQW2
+
+$ SELECT LEFT(id,16), usuario_id FROM sesiones LIMIT 3   (solo la huella SHA-256 del token)
+huella	usuario_id
+0ef258f1013b0056…	NULL
+3aa603e66cbb33c5…	NULL
+69696d278a3206dd…	NULL

@@ -15,7 +15,7 @@ export const pool = mysql.createPool({
 const esquema = new URL('../../database/schema/bajatrip.sql', import.meta.url);
 
 export async function prepararEsquema() {
-  const sql = (await readFile(esquema, 'utf8')).replace(/^--.*$/gm, '');
+  const sql = (await readFile(esquema, 'utf8')).replace(/^\s*--.*$/gm, '');
   for (const sentencia of sql.split(';').map((s) => s.trim()).filter(Boolean)) {
     await pool.query(sentencia);
   }

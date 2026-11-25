@@ -1515,3 +1515,36 @@ summary:focus-visible {
     bottom: var(--espacio-4);
   }
 }
+
+/* --- Práctica 6: cuentas (entrar, registro, mi cuenta, administración) --- */
+.auth-form {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 32rem;
+}
+.auth-form h2 { margin: 0; }
+.auth-form form { display: grid; gap: var(--espacio-4); }
+.auth-form .field input { width: 100%; }
+.auth-links { display: flex; flex-wrap: wrap; gap: var(--espacio-3); }
+.form-ok {
+  margin: 0;
+  padding: var(--espacio-3) var(--espacio-4);
+  border-left: 4px solid #1f7a3d;
+  background: #e7f6ec;
+  color: #14532d;
+}
+/* Campo trampa del registro: fuera de la pantalla, no con display:none (algunos programas lo detectan). */
+.trampa { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.captcha { min-height: 65px; }
+.profile-photo { width: 160px; height: 160px; object-fit: cover; border-radius: 50%; border: 1px solid var(--color-borde); }
+.reservation-detail { display: grid; gap: var(--espacio-3); margin: 0 0 var(--espacio-6); }
+.reservation-detail div { display: grid; grid-template-columns: minmax(8rem, 14rem) 1fr; gap: var(--espacio-3); }
+.reservation-detail dt { font-weight: 600; }
+.reservation-detail dd { margin: 0; }
+.account-trips { display: grid; gap: var(--espacio-2); padding-left: 1.2rem; }
+.admin-scroll { overflow-x: auto; }
+.admin-table { border-collapse: collapse; width: 100%; min-width: 32rem; }
+.admin-table th, .admin-table td { text-align: left; padding: var(--espacio-2) var(--espacio-3); border-bottom: 1px solid var(--color-borde); }
+@media (max-width: 600px) {
+  .reservation-detail div { grid-template-columns: 1fr; gap: var(--espacio-1); }
+}

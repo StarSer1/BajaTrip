@@ -6,3 +6,8 @@ playwright-report/
 .env
 .env.local
 .wrangler/
+
+# Práctica 6: fotos subidas en local y certificados (la llave privada nunca va al repositorio).
+subidas/
+nginx/certs/
+nginx/letsencrypt/

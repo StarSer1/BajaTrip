@@ -6,6 +6,7 @@ import useSessionState from '../hooks/useSessionState.js';
 import { DEFAULT_SEARCH, SEARCH_KEY } from '../hooks/useExperiences.js';
 import { deleteReservation, listReservations } from '../storage/reservations.js';
 import { api } from '../storage/servidor.js';
+import useCuenta from '../hooks/useCuenta.js';
 import { longDate, money, people } from '../utils/format.js';
 import ExperienceGrid from '../components/ExperienceGrid.jsx';
 import ExperienceDialog from '../components/ExperienceDialog.jsx';
@@ -18,8 +19,14 @@ export default function TripsPage() {
   const [reservations, setReservations] = useState({ status: 'loading', items: [] });
   // Solo cuando el sitio corre con el backend: qué nodo respondió y la sesión que comparten todos.
   const [server, setServer] = useState(null);
+  const { usuario } = useCuenta();
+  // Con cuenta: las reservas que el servidor tiene a su nombre, con enlace a su detalle.
+  const [enCuenta, setEnCuenta] = useState([]);
 
-  const askServer = () => api('/api/sesion').then((respuesta) => setServer(respuesta?.ok ? respuesta.datos : null));
+  const askServer = () => Promise.all([api('/api/sesion'), api('/api/reservas')]).then(([sesion, reservas]) => {
+    setServer(sesion?.ok ? sesion.datos : null);
+    setEnCuenta(reservas?.ok ? reservas.datos : []);
+  });
   const load = () => listReservations()
     .then((items) => setReservations({ status: 'ready', items: items.sort((a, b) => a.date.localeCompare(b.date)) }))
     .catch(() => setReservations({ status: 'error', items: [] }))
@@ -60,6 +67,14 @@ export default function TripsPage() {
         </li>)}</ol>
         : <div className="empty-state"><h3>Sin reservas de ejemplo</h3><p>Abre los detalles de una experiencia y prueba una reserva con fecha.</p></div>)}
     </section>
+    {usuario && <section className="section" aria-labelledby="titulo-cuenta">
+      <div className="heading"><h2 id="titulo-cuenta">En tu cuenta</h2><p className="storage-note">Guardadas en el servidor a nombre de {usuario.nombre}.</p></div>
+      {enCuenta.length > 0
+        ? <ul className="account-trips">{enCuenta.map((r) => <li key={r.id}>
+          <Link to={`/mis-viajes/reserva/${r.id}`}>{tours.find((t) => t.id === r.experienciaId)?.name ?? r.experienciaId} · {longDate(r.fecha)}</Link>
+        </li>)}</ul>
+        : <p className="empty-state">Aún no hay reservas en tu cuenta.</p>}
+    </section>}
     {selected && <ExperienceDialog experience={selected} travelers={travelers} onClose={() => { setSelected(null); load(); }} />}
   </div>;
 }

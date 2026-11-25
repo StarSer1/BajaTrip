@@ -1,0 +1,49 @@
+$ curl -I http://localhost:8080/catalogo
+HTTP/1.1 301 Moved Permanently
+Server: nginx
+Date: Wed, 25 Nov 2026 04:59:19 GMT
+Content-Type: text/html
+Content-Length: 162
+Connection: keep-alive
+Location: https://localhost:8443/catalogo
+
+
+$ curl -kI https://localhost:8443/
+HTTP/1.1 200 OK
+Server: nginx
+Date: Wed, 25 Nov 2026 04:59:19 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 585
+Connection: keep-alive
+X-Servidor: 1
+Cache-Control: no-cache
+Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://images.unsplash.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; report-uri /api/csp-reporte
+Strict-Transport-Security: max-age=300
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+X-Frame-Options: DENY
+X-Nodo: 172.28.0.11:3000
+
+
+$ curl -k -i https://localhost:8443/api/sesion   (cookie nueva)
+HTTP/1.1 200 OK
+Server: nginx
+Date: Wed, 25 Nov 2026 04:59:19 GMT
+Content-Type: application/json; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+X-Servidor: 2
+Set-Cookie: bt_sesion=lMSjK0s2gxa0AgTGcWzKKxo7cufwmwlEWqyTQdJafhY; Path=/; Max-Age=2592000; HttpOnly; SameSite=Lax; Secure
+Cache-Control: no-store
+Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://images.unsplash.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; report-uri /api/csp-reporte
+Strict-Transport-Security: max-age=300
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+X-Frame-Options: DENY
+X-Nodo: 172.28.0.12:3000
+
+{"nodo":"2","sesion":"ff7828fb","creadaEnNodo":"2","reservas":0,"usuario":null}
+$ curl -k https://localhost:8443/api/reservas -H "Content-Type: application/json" -d "{roto"
+{"error":"Los datos no tienen un formato válido."}

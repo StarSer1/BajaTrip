@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Demostración de CSP | BajaTrip</title>
+  <link rel="stylesheet" href="/demo-csp.css" />
+</head>
+<body>
+  <main>
+    <h1>Demostración: la CSP bloquea un script</h1>
+    <p>Esta página trae un <code>&lt;script&gt;</code> escrito dentro del HTML, como lo dejaría alguien que logró inyectar código. Si se ejecutara, cambiaría el texto de abajo a rojo y diría «El script se ejecutó».</p>
+    <p id="resultado" class="bloqueado">El script NO se ejecutó: la política de seguridad de contenido lo bloqueó.</p>
+    <p>Abre F12 › Consola: verás el aviso <em>Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self' …"</em>. El bloqueo también queda en la bitácora del servidor (<code>docker compose logs app1 app2 | findstr csp-bloqueo</code>).</p>
+    <p><a href="/">Volver a BajaTrip</a></p>
+  </main>
+  <!-- El script «inyectado». script-src 'self' solo permite archivos .js del propio sitio. -->
+  <script>
+    const r = document.getElementById('resultado');
+    r.textContent = 'El script se ejecutó: la CSP NO está activa.';
+    r.className = 'ejecutado';
+  </script>
+</body>
+</html>

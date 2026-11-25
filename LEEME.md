@@ -38,3 +38,13 @@ No guardamos las fotografías de Unsplash del resto del sitio porque son pesadas
 ## Declaración de uso de IA
 
 Utilizamos asistentes de inteligencia artificial únicamente como apoyo en el diseño de la interfaz y para comprender el funcionamiento de algunos componentes, como los índices de IndexedDB y el ciclo de vida del service worker.
+
+# Práctica 6: medidas de seguridad
+
+Las 14 medidas están aplicadas al proyecto. Partimos de [docs/superficies.md](docs/superficies.md), que ahora indica la medida que cubre cada superficie. La lista con dónde está cada medida, cómo se demuestra en vivo y su evidencia está en [docs/practica-6/lista-verificacion.md](docs/practica-6/lista-verificacion.md). La configuración del servidor, comentada línea por línea, está en [nginx/templates/default.conf.template](nginx/templates/default.conf.template). Cómo levantarlo con HTTPS se explica en el [README](README.md#seguridad-práctica-6).
+
+**Cómo probarlo:** `npm run build`, `bash scripts/certificado-local.sh`, `docker compose up -d --build`; después, `npm run test:seguridad` (una prueba por medida) y `https://localhost:8443`.
+
+## Declaración de uso de IA (Práctica 6)
+
+En la Práctica 6 utilizamos un asistente de inteligencia artificial (Claude, de Anthropic). Lo usamos para escribir buena parte del código de las medidas: cuentas con bcrypt, límite de intentos, captcha, control de acceso, subida de la foto de perfil, la configuración de Nginx con HTTPS y cabeceras, y el script del certificado local. También para las pruebas automáticas de `tests/seguridad/` y para el borrador de esta documentación y de la lista de verificación. Las decisiones de diseño parten de nuestro `docs/superficies.md` y de `docs/balanceo.md`. Cada medida se comprobó funcionando contra el sistema en Docker con esas pruebas y en el navegador.

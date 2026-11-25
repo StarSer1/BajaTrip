@@ -10,6 +10,9 @@ COPY backend ./backend
 COPY database/schema ./database/schema
 COPY frontend/src/data/experiences.js ./frontend/src/data/experiences.js
 COPY dist ./dist
+# Carpeta de las fotos subidas, fuera de dist/. El volumen «subidas» toma este dueño al crearse.
+RUN mkdir -p /app/subidas && chown node:node /app/subidas
+# Sin privilegios de root: si alguien lograra ejecutar algo en el nodo, no sería administrador.
 USER node
 EXPOSE 3000
 CMD ["node", "backend/server.js"]

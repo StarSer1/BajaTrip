@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Tarea 4 · Firma electrónica, certificados y HTTPS</title>
+<style>
+  @page { size: Letter; margin: 2.2cm 2.3cm; }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #1f2937; font-size: 11pt; line-height: 1.4; margin: 0; text-align: justify; }
+  h1, h2, h3 { color: #1e3a5f; text-align: left; }
+  h2 { font-size: 14pt; border-bottom: 2px solid #dbe3ee; padding-bottom: 3px; margin: 22px 0 8px; break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 14px 0 4px; break-after: avoid; }
+  p { margin: 5px 0 7px; }
+  ul, ol { margin: 4px 0 8px; padding-left: 22px; }
+  li { margin: 2px 0; }
+  code { font-family: Consolas, monospace; font-size: 9.5pt; background: #eef2f7; padding: 0 3px; border-radius: 3px; }
+  pre { font-family: Consolas, monospace; font-size: 8pt; line-height: 1.3; background: #f5f7fa; border: 1px solid #dbe3ee; padding: 8px 10px; border-radius: 4px; white-space: pre-wrap; text-align: left; break-inside: avoid; margin: 6px 0 8px; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 9.8pt; break-inside: avoid; text-align: left; }
+  th { background: #1e3a5f; color: #fff; padding: 5px 7px; font-weight: 600; }
+  td { border-bottom: 1px solid #dbe3ee; padding: 5px 7px; vertical-align: top; }
+  .portada { height: 22.5cm; display: flex; flex-direction: column; justify-content: center; text-align: center; page-break-after: always; }
+  .portada .inst { font-size: 12pt; color: #4b5563; text-transform: uppercase; letter-spacing: .5px; }
+  .portada h1 { font-size: 24pt; margin: 34px 0 8px; }
+  .portada .sub { font-size: 13pt; color: #374151; }
+  .portada .autores { margin-top: 70px; font-size: 12pt; line-height: 1.8; }
+  .portada .fecha { margin-top: 40px; color: #4b5563; }
+  .nota { background: #f3f6fa; border-left: 4px solid #1e3a5f; padding: 6px 10px; margin: 8px 0; break-inside: avoid; }
+  .refs li { margin: 3px 0; text-align: left; font-size: 10pt; }
+  .salto { page-break-before: always; }
+</style>
+</head>
+<body>
+
+<section class="portada">
+  <div class="inst">Ingeniería en Sistemas Computacionales<br>Aplicaciones Web II</div>
+  <h1>Tarea 4<br>Firma electrónica, certificados y HTTPS</h1>
+  <div class="sub">Con la configuración aplicada en BajaTrip</div>
+  <div class="autores">Brandon Israel Nuñez Montoya<br>David Alejandro De Los Santos Cruz</div>
+  <div class="fecha">25 de noviembre de 2026</div>
+</section>
+
+<h2>Parte A · Firma y certificados</h2>
+
+<h3>1. Cifrar, firmar y certificar no son lo mismo</h3>
+<p>Las tres operaciones usan criptografía, pero cada una resuelve un problema distinto, y se confunden porque casi siempre aparecen juntas.</p>
+<ul>
+  <li><strong>Cifrar</strong> protege la <em>confidencialidad</em>: solo quien tiene la llave correcta puede leer el mensaje. En el cifrado asimétrico se cifra con la llave pública del destinatario y solo su llave privada lo abre.</li>
+  <li><strong>Firmar</strong> protege la <em>integridad</em> y la <em>autoría</em>. El mensaje sigue siendo legible para cualquiera, pero quien lo recibe puede comprobar que no cambió desde que se firmó y que lo firmó el dueño de cierta llave privada. Además da <em>no repudio</em>: el firmante no puede negar después que firmó.</li>
+  <li><strong>Certificar</strong> resuelve una pregunta previa: ¿de quién es esta llave pública? Un certificado es un documento firmado por una autoridad certificadora (CA) que dice «la llave pública X pertenece a Y», con fechas de vigencia y usos permitidos. Sin certificado, la firma solo prueba que alguien con la llave privada firmó, pero no quién es ese alguien.</li>
+</ul>
+<p>En HTTPS se usan las tres. El servidor presenta un certificado (certificar); demuestra que tiene la llave privada correspondiente firmando datos del saludo TLS (firmar); y después el tráfico viaja cifrado con una llave de sesión acordada entre los dos (cifrar).</p>
+
+<h3>2. Cómo funciona una firma con llave pública y privada</h3>
+<p>Cada participante genera un par de llaves relacionadas matemáticamente: la <strong>privada</strong>, que nunca enseña, y la <strong>pública</strong>, que reparte. Lo que una hace, solo la otra lo comprueba. El proceso de firma tiene dos pasos:</p>
+<ol>
+  <li><strong>Resumen.</strong> Se calcula una función hash del documento, por ejemplo SHA-256. El resultado mide siempre lo mismo (256 bits), cambia por completo si cambia una sola coma del documento, y no permite reconstruir el original.</li>
+  <li><strong>Firma.</strong> Con la llave privada se firma ese resumen (con RSA o con curvas elípticas, como ECDSA). El resultado es la firma, que viaja junto al documento.</li>
+</ol>
+<p>Para <strong>verificar</strong>, quien recibe calcula otra vez el resumen del documento y usa la llave pública del firmante para comprobar que la firma corresponde a ese resumen. Si alguien cambió el documento, los resúmenes no coinciden. Si alguien firmó con otra llave, la llave pública no la valida. Se firma el resumen y no el documento completo porque es mucho más rápido y porque el tamaño de la firma no depende del tamaño del archivo.</p>
+<p>La seguridad de todo el esquema descansa en que la llave privada siga siendo privada. Por eso la e.firma del SAT protege su archivo <code>.key</code> con contraseña. Por la misma razón, en nuestro proyecto la llave del servidor (<code>nginx/certs/*.key</code>) está en <code>.gitignore</code> y nunca se sube al repositorio.</p>
+
+<h3>3. La cadena de confianza y los tipos de certificado</h3>
+<p>Los certificados de sitios web siguen el estándar X.509 (RFC 5280). El navegador no conoce de antemano el certificado de cada sitio, pero sí trae instalada una lista corta de <strong>certificados raíz</strong> de autoridades en las que confía. La confianza se construye por eslabones:</p>
+<ul>
+  <li>La <strong>raíz</strong> se firma a sí misma y vive guardada fuera de línea. Casi nunca firma certificados de sitios directamente.</li>
+  <li>La raíz firma uno o varios certificados <strong>intermedios</strong>. Si un intermedio se ve comprometido, se revoca sin tocar la raíz.</li>
+  <li>El intermedio firma el <strong>certificado del sitio</strong> (la hoja), que incluye los nombres de dominio en la extensión <em>Subject Alternative Name</em>.</li>
+</ul>
+<p>Al conectarse, el servidor manda su certificado junto con el intermedio, es decir, la <em>cadena</em>. El navegador verifica cada firma hacia arriba hasta llegar a una raíz que ya tiene. También revisa que no estén vencidos, que el dominio coincida y que no estén revocados. Por eso en Nginx se configura <code>fullchain.pem</code> y no solo el certificado del sitio: si falta el intermedio, algunos clientes no pueden armar la cadena.</p>
+<p>En BajaTrip reproducimos esta cadena en pequeño para trabajar en local. El script <code>scripts/certificado-local.sh</code> crea una CA propia y con ella firma el certificado de <code>localhost</code>. Si Windows confía en esa CA, el navegador muestra el candado igual que con una CA pública.</p>
+<table>
+  <tr><th>Tipo</th><th>Qué comprueba la autoridad</th><th>Uso típico</th></tr>
+  <tr><td><strong>DV</strong> (validación de dominio)</td><td>Solo que el solicitante controla el dominio (un archivo en el sitio o un registro DNS). Es automático y tarda segundos.</td><td>La mayoría de los sitios. Es el que emite Let's Encrypt.</td></tr>
+  <tr><td><strong>OV</strong> (validación de organización)</td><td>El dominio, y además que la organización existe legalmente. Su nombre aparece en el certificado.</td><td>Empresas que quieren mostrar quién está detrás.</td></tr>
+  <tr><td><strong>EV</strong> (validación extendida)</td><td>Una revisión más estricta de la organización, con documentos y verificación telefónica.</td><td>Bancos y gobierno. Los navegadores ya no lo destacan con una barra verde.</td></tr>
+  <tr><td><strong>Comodín</strong> (<code>*.bajatrip.mx</code>)</td><td>Puede ser DV u OV. Cubre todos los subdominios de un nivel: <code>api.bajatrip.mx</code> y <code>panel.bajatrip.mx</code>, pero no <code>bajatrip.mx</code> ni <code>a.b.bajatrip.mx</code>. Con Let's Encrypt solo se obtiene con el desafío DNS-01.</td><td>Muchos subdominios. Si se filtra su llave, se comprometen todos a la vez.</td></tr>
+</table>
+<p>Lo importante: <strong>un certificado DV gratuito cifra exactamente igual</strong> que uno EV pagado. La diferencia está en cuánto se verificó la identidad del dueño, no en la fuerza del cifrado. Las vigencias también se están acortando. El CA/Browser Forum aprobó en 2025 la boleta SC-081, que bajó el máximo de un certificado público de 398 a 200 días a partir del 15 de marzo de 2026. Seguirá bajando hasta 47 días en 2029, y Let's Encrypt anunció que sus certificados pasarán de 90 a 45 días hacia 2028. Con esas vigencias, renovar a mano deja de ser una opción.</p>
+
+<h3>4. El marco mexicano: e.firma del SAT y NOM-151</h3>
+<p>En México, la <strong>firma electrónica</strong> es la figura legal y la <strong>firma digital</strong> es la técnica (resumen más llave privada) que la hace posible. El Código de Comercio, en su artículo 97, establece cuándo una firma electrónica se considera <em>avanzada o fiable</em>. Para los actos de gobierno, la Ley de Firma Electrónica Avanzada le da a esta firma el mismo valor que a la autógrafa.</p>
+<p>La <strong>e.firma del SAT</strong> (antes FIEL) es el ejemplo más conocido. Son dos archivos: el <code>.cer</code>, que es el certificado X.509 con la llave pública y los datos del contribuyente, firmado por el SAT como autoridad certificadora; y el <code>.key</code>, que es la llave privada cifrada con la contraseña que elige el titular. Tiene vigencia de cuatro años y se renueva en línea solo mientras sigue vigente.</p>
+<p>La <strong>NOM-151-SCFI-2016</strong> (DOF, 30 de marzo de 2017) resuelve otro problema: conservar un documento electrónico de modo que después se pueda probar que existía en cierta fecha y que no cambió. Para eso, un Prestador de Servicios de Certificación acreditado por la Secretaría de Economía emite una <strong>constancia de conservación</strong>: un sello digital de tiempo sobre el resumen del documento. La firma dice <em>quién</em>; la constancia NOM-151 dice <em>cuándo</em> y <em>que no se alteró desde entonces</em>.</p>
+
+<h2>Parte B · HTTPS en el servidor</h2>
+
+<h3>5. Procedimiento con una autoridad gratuita: obtener, instalar y renovar</h3>
+<p>Let's Encrypt emite certificados DV gratuitos mediante el protocolo <strong>ACME</strong> (RFC 8555). Un programa en el servidor, en nuestro caso <strong>Certbot</strong>, conversa con la autoridad sin intervención humana:</p>
+<ol>
+  <li><strong>Requisitos.</strong> Un dominio que apunte (registro A) a la IP pública del servidor, y los puertos 80 y 443 abiertos.</li>
+  <li><strong>Cuenta y pedido.</strong> Certbot crea un par de llaves de cuenta, la registra y pide un certificado para <code>bajatrip.mx</code>.</li>
+  <li><strong>Desafío.</strong> La CA pide demostrar el control del dominio. Con <em>HTTP-01</em>, Certbot deja un archivo en <code>/.well-known/acme-challenge/</code> y la CA lo descarga por el puerto 80. Con <em>DNS-01</em>, se publica un registro TXT; es el único desafío que sirve para comodines.</li>
+  <li><strong>Emisión.</strong> Certbot genera la llave privada del sitio y una solicitud firmada (CSR). La CA devuelve el certificado y su cadena. Quedan en <code>/etc/letsencrypt/live/bajatrip.mx/</code> como <code>fullchain.pem</code> y <code>privkey.pem</code>.</li>
+  <li><strong>Instalación.</strong> Nginx apunta a esos dos archivos (sección 6) y se recarga.</li>
+  <li><strong>Renovación automática.</strong> <code>certbot renew</code> se ejecuta periódicamente y solo renueva lo que vence en menos de 30 días. Después hay que recargar Nginx para que tome el certificado nuevo.</li>
+</ol>
+<p>En BajaTrip todo esto está en <code>docker-compose.yml</code> como el perfil <code>publico</code>. El certificado se pide una vez con:</p>
+<pre>docker compose --profile publico run --rm --entrypoint certbot certbot certonly \
+  --webroot -w /var/www/certbot -d bajatrip.mx --email equipo@bajatrip.mx --agree-tos --no-eff-email</pre>
+<p>Después, el contenedor <code>certbot</code> queda en un ciclo que ejecuta <code>certbot renew</code> cada 12 horas, y el balanceador ejecuta <code>nginx -s reload</code> cada 6. Ninguno de los dos pasos depende de que alguien se acuerde. Ese es justo el error común de renovar a mano: un día se olvida y el sitio amanece con «La conexión no es privada».</p>
+
+<h3>6. Configuración de Nginx con HTTPS y redirección, comentada</h3>
+<p>Esta es la configuración que usa nuestro balanceador (<code>nginx/templates/default.conf.template</code>), ya con los valores de producción. Lo que está entre <code>${…}</code> en la plantilla lo sustituye Docker al arrancar.</p>
+<pre>server_tokens off;                          # no anunciar la versión de Nginx
+
+server {                                    # --- puerto 80: solo redirige ---
+    listen 80;                              # escucha HTTP sin cifrar
+    server_name bajatrip.mx;                # para qué dominio es este bloque
+
+    location /.well-known/acme-challenge/ { # excepción: el desafío HTTP-01
+        root /var/www/certbot;              # carpeta donde Certbot deja el archivo
+    }
+    location / {                            # todo lo demás
+        return 301 https://$host$request_uri;   # redirección permanente a https, misma ruta
+    }
+}
+
+server {                                    # --- puerto 443: aquí termina TLS ---
+    listen 443 ssl;                         # HTTPS
+    http2 on;                               # HTTP/2 (más rápido, solo sobre TLS)
+    server_name bajatrip.mx;
+
+    ssl_certificate     /etc/letsencrypt/live/bajatrip.mx/fullchain.pem; # certificado + intermedio
+    ssl_certificate_key /etc/letsencrypt/live/bajatrip.mx/privkey.pem;   # llave privada (fuera de git)
+    ssl_protocols TLSv1.2 TLSv1.3;          # SSLv3, TLS 1.0 y 1.1 tienen fallas conocidas
+    ssl_session_cache shared:TLS:10m;       # reutilizar saludos TLS: menos trabajo por visita
+    ssl_session_timeout 10m;
+    ssl_session_tickets off;                # sin tickets de larga duración (secreto hacia adelante)
+
+    add_header Strict-Transport-Security "max-age=31536000" always;   # HSTS (sección 7)
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' …" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+
+    proxy_set_header Host              $http_host;                 # el dominio original
+    proxy_set_header X-Real-IP         $remote_addr;               # la IP real del visitante
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;                    # avisa al nodo: «entró por https»
+
+    location / {
+        proxy_pass http://bajatrip;         # reparte entre los nodos (upstream bajatrip)
+    }
+}</pre>
+<p>Dos detalles que encontramos al aplicarla. Primero, en Nginx un <code>add_header</code> dentro de un <code>location</code> anula todos los del bloque <code>server</code>; por eso dejamos las cabeceras solo a nivel de servidor. Segundo, <code>always</code> hace que también salgan en las respuestas de error (404, 429, 503), que son justamente las que un atacante provoca.</p>
+
+<h3>7. HSTS y el riesgo de activarlo mal</h3>
+<p>La redirección 301 tiene un hueco: la <em>primera</em> petición sigue saliendo por http y alguien en la misma red (el wifi de un hotel, por ejemplo) puede interceptarla antes de la redirección. Eso se conoce como <em>SSL stripping</em>. <strong>HSTS</strong> (HTTP Strict Transport Security, RFC 6797) lo cierra. Con la cabecera <code>Strict-Transport-Security: max-age=31536000</code>, el navegador recuerda durante un año que ese sitio solo se usa por HTTPS: convierte cualquier <code>http://</code> en <code>https://</code> antes de mandar nada, y además ya no deja «continuar de todos modos» si el certificado falla.</p>
+<p>Ese mismo poder es el riesgo. El navegador obedece la cabecera durante todo el <code>max-age</code> y el servidor no puede retirarla:</p>
+<ul>
+  <li>Si el certificado vence o se configura mal, los visitantes no pueden entrar de ninguna manera hasta que se arregle.</li>
+  <li>Con <code>includeSubDomains</code>, cualquier subdominio que todavía no tenga HTTPS (un panel interno, una impresora, un servicio viejo) queda inaccesible.</li>
+  <li>Con <code>preload</code>, el dominio entra en una lista que viene integrada en los navegadores. Salir de ella tarda semanas o meses, y hstspreload.org pide un <code>max-age</code> de al menos un año.</li>
+  <li>En desarrollo: si <code>localhost</code> manda HSTS largo, el navegador forzará HTTPS en <em>todos</em> los puertos de localhost, incluido el servidor de Vite.</li>
+</ul>
+<p>Por eso en BajaTrip el <code>max-age</code> es una variable. En local vale 300 segundos; con dominio se sube a un año solo después de comprobar que HTTPS y la renovación automática funcionan. No usamos <code>includeSubDomains</code> ni <code>preload</code> porque no controlamos todavía todos los subdominios. Es lo que recomienda hstspreload.org: empezar con valores cortos e ir subiendo.</p>
+
+<h3>8. HTTPS detrás del balanceador: dónde va el certificado</h3>
+<p>BajaTrip corre con un balanceador Nginx y dos nodos de Node.js (Práctica 5), así que hay dos tramos: del visitante al balanceador, y del balanceador a cada nodo. El primero siempre va cifrado. Para el segundo hay dos opciones.</p>
+<table>
+  <tr><th></th><th>Opción 1: terminar TLS en el balanceador</th><th>Opción 2: volver a cifrar hacia los nodos</th></tr>
+  <tr><td>Dónde está el certificado</td><td>Solo en el balanceador. Los nodos hablan HTTP.</td><td>En el balanceador y, además, uno en cada nodo (puede ser de una CA interna).</td></tr>
+  <tr><td>Tramo interno</td><td>Sin cifrar, por una red privada que nadie de afuera alcanza.</td><td>Cifrado de punta a punta (<code>proxy_pass https://</code> con <code>proxy_ssl_verify on</code>).</td></tr>
+  <tr><td>Ventajas</td><td>Un solo certificado que renovar. El balanceador ve la petición y puede poner cabeceras, limitar intentos y elegir nodo.</td><td>Protege aunque la red interna sea compartida o la vea otra persona (nube, centro de datos ajeno).</td></tr>
+  <tr><td>Costos</td><td>Hay que confiar en la red interna.</td><td>Más certificados y llaves que administrar y renovar, y doble trabajo de cifrado.</td></tr>
+</table>
+<p><strong>Elegimos la opción 1.</strong> Nuestros nodos y el balanceador están en la misma red de Docker (<code>bajatrip-red</code>, 172.28.0.0/24), que solo existe dentro del equipo. Los nodos ni siquiera publican sus puertos hacia la red local: solo escuchan en <code>127.0.0.1</code>. El certificado y la llave viven en un único lugar, y la renovación automática se configura una sola vez.</p>
+<p>Para que la aplicación sepa que el visitante entró por HTTPS, el balanceador manda <code>X-Forwarded-Proto: https</code>. El nodo solo cree esa cabecera si la petición viene de la IP del balanceador (<code>PROXIES_CONFIABLES=172.28.0.10</code>); de cualquier otro origen podría ser inventada. Con ese dato el nodo marca la cookie de sesión como <code>Secure</code>. Si los nodos se movieran a computadoras distintas conectadas por una red compartida, como en la variante de tres máquinas de la Práctica 5, cambiaríamos a la opción 2 para ese tramo.</p>
+
+<h2>Fuentes</h2>
+<ul class="refs">
+  <li>Cooper, D. et al. (2008). <em>RFC 5280: Internet X.509 Public Key Infrastructure Certificate and CRL Profile</em>. IETF. https://www.rfc-editor.org/rfc/rfc5280</li>
+  <li>Hodges, J., Jackson, C. y Barth, A. (2012). <em>RFC 6797: HTTP Strict Transport Security (HSTS)</em>. IETF. https://www.rfc-editor.org/rfc/rfc6797</li>
+  <li>Rescorla, E. (2018). <em>RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3</em>. IETF. https://www.rfc-editor.org/rfc/rfc8446</li>
+  <li>Barnes, R. et al. (2019). <em>RFC 8555: Automatic Certificate Management Environment (ACME)</em>. IETF. https://www.rfc-editor.org/rfc/rfc8555</li>
+  <li>Let's Encrypt. <em>How It Works</em> y <em>Challenge Types</em>. https://letsencrypt.org/how-it-works/ · https://letsencrypt.org/docs/challenge-types/</li>
+  <li>Let's Encrypt (2025). <em>Decreasing Certificate Lifetimes to 45 Days</em> y <em>Certificate Lifetime Rationale and Plans</em>. https://letsencrypt.org/2025/12/02/from-90-to-45 · https://letsencrypt.org/docs/cert-lifetimes/</li>
+  <li>Electronic Frontier Foundation. <em>Certbot documentation: webroot plugin and renewal</em>. https://eff-certbot.readthedocs.io/</li>
+  <li>F5 / NGINX. <em>Module ngx_http_ssl_module</em> y <em>Module ngx_http_headers_module</em>. https://nginx.org/en/docs/http/ngx_http_ssl_module.html · https://nginx.org/en/docs/http/ngx_http_headers_module.html</li>
+  <li>MDN Web Docs. <em>Strict-Transport-Security header</em>. https://developer.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security</li>
+  <li>HSTS Preload List. <em>Submission requirements</em> y <em>Removal</em>. https://hstspreload.org/ · https://hstspreload.org/removal/</li>
+  <li>CA/Browser Forum (2025). <em>Ballot SC-081v3: Introduce Schedule of Reducing Validity and Data Reuse Periods</em>. https://cabforum.org/</li>
+  <li>Servicio de Administración Tributaria. <em>Renueva el certificado de tu e.firma</em>. https://www.sat.gob.mx/</li>
+  <li>Secretaría de Economía (2017). <em>NOM-151-SCFI-2016, Requisitos que deben observarse para la conservación de mensajes de datos y digitalización de documentos</em>. DOF, 30/03/2017. https://dof.gob.mx/normasOficiales.php?codp=6499&amp;view=si</li>
+  <li>Cámara de Diputados. <em>Código de Comercio</em>, Libro Segundo, Título Segundo (arts. 89–114), y <em>Ley de Firma Electrónica Avanzada</em>. https://www.diputados.gob.mx/LeyesBiblio/</li>
+</ul>
+
+</body>
+</html>

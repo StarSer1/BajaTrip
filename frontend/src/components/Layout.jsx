@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import useFavorites from '../hooks/useFavorites.js';
 import useOnline from '../hooks/useOnline.js';
+import useCuenta from '../hooks/useCuenta.js';
 import ChatWidget from './ChatWidget.jsx';
 
 function Logo() {
@@ -13,6 +14,7 @@ export default function Layout() {
   const home = pathname === '/';
   const { ids } = useFavorites();
   const online = useOnline();
+  const { usuario } = useCuenta();
   useEffect(() => {
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView();
     else window.scrollTo(0, 0);
@@ -34,6 +36,7 @@ export default function Layout() {
           </span>}</NavLink>
           <NavLink to="/guias">Guías</NavLink>
           <Link to="/#como-funciona">Cómo funciona</Link>
+          {usuario ? <NavLink to="/cuenta">Mi cuenta</NavLink> : <NavLink to="/entrar">Entrar</NavLink>}
         </nav>
         <Link className="nav-cta" to="/#experiencias">Encuentra tu aventura</Link>
       </div>

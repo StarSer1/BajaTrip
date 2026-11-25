@@ -10,9 +10,12 @@
     "dev:worker": "vite build && wrangler dev",
     "deploy": "vite build && wrangler deploy",
     "test": "playwright test",
-    "backend": "node backend/server.js"
+    "backend": "node backend/server.js",
+    "test:seguridad": "playwright test --config playwright.seguridad.config.js",
+    "certificado": "bash scripts/certificado-local.sh"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "mysql2": "^3.24.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

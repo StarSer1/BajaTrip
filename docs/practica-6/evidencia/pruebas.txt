@@ -1,0 +1,20 @@
+
+Running 15 tests using 1 worker
+
+  ok  1 tests\seguridad\seguridad.spec.js:50:3 › Autenticación › 1. La contraseña se guarda derivada con bcrypt, nunca en claro (899ms)
+  ok  2 tests\seguridad\seguridad.spec.js:57:3 › Autenticación › 2. El error no revela si el correo existe (1.4s)
+  ok  3 tests\seguridad\seguridad.spec.js:72:3 › Autenticación › 3. El registro exige captcha y tiene campo trampa (195ms)
+  ok  4 tests\seguridad\seguridad.spec.js:82:3 › Autenticación › 4. Límite de intentos: al sexto fallo, 429 aunque la contraseña sea correcta (1.3s)
+  ok  5 tests\seguridad\seguridad.spec.js:93:3 › Autenticación › 5. Cookie con HttpOnly, Secure y SameSite; se rota al entrar y se invalida al salir (439ms)
+  ok  6 tests\seguridad\seguridad.spec.js:115:3 › Aplicación › 6. Consultas parametrizadas: una inyección SQL no inicia sesión (9ms)
+  ok  7 tests\seguridad\seguridad.spec.js:123:3 › Aplicación › 7. Validación en el servidor: datos fuera de regla y total ignorado (21ms)
+  ok  8 tests\seguridad\seguridad.spec.js:135:3 › Aplicación › 8. Control de acceso: no se ve ni se borra la reserva de otro cambiando el id (870ms)
+  ok  9 tests\seguridad\seguridad.spec.js:149:3 › Aplicación › 9. Subida de archivos: tipo real, tamaño y nombre nuevo (819ms)
+  ok 10 tests\seguridad\seguridad.spec.js:169:3 › Aplicación › 10. Bitácora: registra los fallos sin contraseñas ni correos completos (1.5s)
+  ok 11 tests\seguridad\seguridad.spec.js:183:3 › Servidor › 11. HTTP redirige a HTTPS con 301 (6ms)
+  ok 12 tests\seguridad\seguridad.spec.js:190:3 › Servidor › 12. Las cinco cabeceras de seguridad (24ms)
+  ok 13 tests\seguridad\seguridad.spec.js:202:3 › Servidor › 13. La CSP bloquea un script escrito en la página (109ms)
+  ok 14 tests\seguridad\seguridad.spec.js:212:3 › Servidor › 14. Depuración apagada: errores genéricos, sin versión del servidor ni credenciales (401ms)
+  ok 15 tests\seguridad\seguridad.spec.js:224:3 › Servidor › Extra. Una petición de otro sitio (CSRF) se rechaza (7ms)
+
+  15 passed (8.8s)

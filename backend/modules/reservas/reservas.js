@@ -20,19 +20,34 @@ function fechaValida(fecha) {
   return fecha >= hoy();
 }
 
+// Control de acceso: TODAS las consultas llevan el filtro del dueño. Con cuenta, el dueño es la
+// cuenta; sin cuenta, la sesión anónima. Nunca se busca una reserva solo por su id.
+const dueno = (sesion) => (sesion.usuarioId
+  ? { filtro: 'usuario_id = ?', valor: sesion.usuarioId }
+  : { filtro: 'sesion_id = ? AND usuario_id IS NULL', valor: sesion.id });
+
 export async function contarReservas(sesion) {
-  const [[{ total }]] = await pool.execute('SELECT COUNT(*) AS total FROM reservas WHERE sesion_id = ?', [sesion.id]);
+  const { filtro, valor } = dueno(sesion);
+  const [[{ total }]] = await pool.execute(`SELECT COUNT(*) AS total FROM reservas WHERE ${filtro}`, [valor]);
   return total;
 }
 
 export async function listarReservas(sesion) {
-  const [filas] = await pool.execute(`SELECT ${COLUMNAS} FROM reservas WHERE sesion_id = ? ORDER BY fecha, creada_en`, [sesion.id]);
+  const { filtro, valor } = dueno(sesion);
+  const [filas] = await pool.execute(`SELECT ${COLUMNAS} FROM reservas WHERE ${filtro} ORDER BY fecha, creada_en`, [valor]);
   return filas;
 }
 
 async function buscarPropia(sesion, id) {
-  const [filas] = await pool.execute(`SELECT ${COLUMNAS} FROM reservas WHERE id = ? AND sesion_id = ?`, [id, sesion.id]);
+  const { filtro, valor } = dueno(sesion);
+  const [filas] = await pool.execute(`SELECT ${COLUMNAS} FROM reservas WHERE id = ? AND ${filtro}`, [id, valor]);
   return filas[0] ?? null;
+}
+
+// Una reserva por su id, solo si es del que la pide. Ajena o inexistente devuelven lo mismo (null).
+export async function obtenerReserva(sesion, id) {
+  if (!sesion || !UUID.test(String(id).toLowerCase())) return null;
+  return buscarPropia(sesion, String(id).toLowerCase());
 }
 
 // Devuelve { estado, reserva }: 201 si es nueva, 200 si ya estaba (un reintento).
@@ -54,8 +69,8 @@ export async function crearReserva(sesion, datos) {
   const total = experiencia.price * viajeros;
   try {
     await pool.execute(
-      'INSERT INTO reservas (id, sesion_id, experiencia_id, fecha, viajeros, total, nodo) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [id, sesion.id, experiencia.id, datos.fecha, viajeros, total, config.nodo],
+      'INSERT INTO reservas (id, sesion_id, usuario_id, experiencia_id, fecha, viajeros, total, nodo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [id, sesion.id, sesion.usuarioId ?? null, experiencia.id, datos.fecha, viajeros, total, config.nodo],
     );
   } catch (error) {
     // El id ya pertenece a otra sesión. Respuesta genérica: no confirma que ese id exista.
@@ -65,9 +80,10 @@ export async function crearReserva(sesion, datos) {
   return { estado: 201, reserva: await buscarPropia(sesion, id) };
 }
 
-// Borra solo si la reserva es de esta sesión. Ajena o inexistente responden igual.
+// Borra solo si la reserva es de quien la pide. Ajena o inexistente responden igual.
 export async function eliminarReserva(sesion, id) {
   if (!UUID.test(id)) return false;
-  const [resultado] = await pool.execute('DELETE FROM reservas WHERE id = ? AND sesion_id = ?', [id, sesion.id]);
+  const { filtro, valor } = dueno(sesion);
+  const [resultado] = await pool.execute(`DELETE FROM reservas WHERE id = ? AND ${filtro}`, [id, valor]);
   return resultado.affectedRows > 0;
 }
