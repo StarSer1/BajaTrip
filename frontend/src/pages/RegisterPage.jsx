@@ -17,6 +17,12 @@ export default function RegisterPage() {
       : setEstado({ error: mensajeDeError(respuesta), listo: '' })));
   }, []);
 
+  // La marca de «no coinciden» se quita al escribir: si se quedara puesta, el navegador
+  // bloquearía el envío y la comparación nunca se volvería a hacer.
+  function limpiarConfirmacion(event) {
+    event.currentTarget.form.elements.confirmar.setCustomValidity('');
+  }
+
   async function enviar(event) {
     event.preventDefault();
     if (enviando) return;
@@ -55,11 +61,11 @@ export default function RegisterPage() {
         <input type="email" name="correo" autoComplete="email" required maxLength={254} />
       </label>
       <label className="field">Contraseña
-        <input type="password" name="contrasena" autoComplete="new-password" required minLength={8} maxLength={72} aria-describedby="ayuda-contrasena" />
+        <input type="password" name="contrasena" onInput={limpiarConfirmacion} autoComplete="new-password" required minLength={8} maxLength={72} aria-describedby="ayuda-contrasena" />
         <small id="ayuda-contrasena">De 8 a 72 caracteres. Una frase de varias palabras es fácil de recordar y difícil de adivinar.</small>
       </label>
       <label className="field">Confirma la contraseña
-        <input type="password" name="confirmar" autoComplete="new-password" required maxLength={72} />
+        <input type="password" name="confirmar" onInput={limpiarConfirmacion} autoComplete="new-password" required maxLength={72} />
       </label>
       {/* Campo trampa: oculto para las personas (y para lectores de pantalla); los programas lo llenan. */}
       <div className="trampa" aria-hidden="true">

@@ -59,14 +59,15 @@ El historial completo es la fuente: `git log --format="%h %ad %an %s" --date=sho
 
 | Fecha | Commit | Autor | Qué se hizo |
 | --- | --- | --- | --- |
-| 25/11 | *(por registrar)* | *(quien suba el commit)* | **Práctica 6**: cuentas con bcrypt, límite de intentos, captcha, control de acceso, subida segura de la foto, HTTPS con Nginx, cabeceras y CSP, pruebas `tests/seguridad/`, lista de verificación y evidencia (`docs/practica-6/`) |
-| 25/11 | *(por registrar)* | *(quien suba el commit)* | **Tarea 4** (`docs/tarea-4/`) y **Tarea 5** (`docs/tarea-5/`) |
-| 25/11 | *(por registrar)* | *(quien suba el commit)* | **Documentación técnica** (`docs/documentacion/`) |
+| 24/11 | `8abde55` | StarSer | **Práctica 6**: cuentas con bcrypt, límite de intentos, captcha, control de acceso, subida segura de la foto, HTTPS con Nginx, cabeceras y CSP, pruebas `tests/seguridad/`, lista de verificación y evidencia (`docs/practica-6/`) |
+| 24/11 | `8abde55` | StarSer | **Tarea 4** (`docs/tarea-4/`) y **Tarea 5** (`docs/tarea-5/`) |
+| 24/11 | `8abde55` | StarSer | **Documentación técnica** (`docs/documentacion/`) |
+| 25/11 | *(este commit)* | Brandon | **Correcciones para la presentación**: generación del certificado local para el balanceador, actualización de las tablas `sesiones` y `reservas` en una base que venía de la Práctica 5 (el inicio de sesión fallaba con 503), arreglo del aviso «Las contraseñas no coinciden» que se quedaba fijo en `/registro` (`RegisterPage.jsx`) y preparación de la demo |
 
 > Para el equipo: después de subir la entrega final, cambien *(por registrar)* por el hash corto de cada commit (`git log --oneline -3`) y pongan el autor real, para que esta tabla coincida con el historial. En la elaboración de esta entrega se usó un asistente de IA, como se declara en el [LEEME](../../LEEME.md#declaración-de-uso-de-ia-práctica-6).
 
 ## Resumen por integrante
 
-**Brandon Israel Nuñez Montoya (`wrok`)**: diseño visual y semántica de la página de inicio y del catálogo; tarjeta con animaciones; migración a React; Práctica 4 (guías en IndexedDB y service worker); despliegue en Cloudflare y chat en vivo; análisis de balanceo (`docs/balanceo.md`); informe y mediciones de la Práctica 5.
+**Brandon Israel Nuñez Montoya (`wrok`)**: diseño visual y semántica de la página de inicio y del catálogo; tarjeta con animaciones; migración a React; Práctica 4 (guías en IndexedDB y service worker); despliegue en Cloudflare y chat en vivo; análisis de balanceo (`docs/balanceo.md`); informe y mediciones de la Práctica 5; correcciones previas a la presentación final (certificado local, esquema de la base y formulario de registro).
 
 **David Alejandro De Los Santos Cruz (`StarSer`)**: creación del repositorio y estructura de carpetas; fundamentación del proyecto; primera tarjeta y HTML semántico; auditorías Lighthouse, Tarea 3 y pruebas del catálogo; limpieza de `main` tras la migración; backend de la Práctica 5 (servidor Node, sesión en MySQL, reservas, Docker Compose y Nginx); inventario de superficies de ataque.
